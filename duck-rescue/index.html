@@ -8,44 +8,53 @@
 </head>
 <body>
 
-    <div class="game-container">
-        <h1 class="game-title">DUCK RESCUE</h1>
+    <div class="main-wrapper">
+        <div class="game-container">
+            <h1 class="game-title">DUCK RESCUE</h1>
 
-        <div id="statusOverlay" class="overlay">
-            <h1 id="statusTitle">READY?</h1>
-            <p id="highScoreText">High Score: 0</p>
-            <p id="finalDeathText" style="font-size: 0.9rem; color: #e74c3c; display: none;"></p>
-            <button class="btn start-btn" onclick="startGame()">▶ START GAME</button>
-            <a href="../index.html" class="back-link">← Back to Hub</a>
+            <div id="statusOverlay" class="overlay">
+                <h1 id="statusTitle">READY?</h1>
+                <p id="highScoreText">High Score: 0</p>
+                <p id="finalDeathText" style="font-size: 0.9rem; color: #e74c3c; display: none;"></p>
+                <button class="btn start-btn" onclick="startGame()">▶ START GAME</button>
+                <a href="../index.html" class="back-link">← Back to Hub</a>
+            </div>
+
+            <div class="header">
+                <div class="stat-box">Saved: <span id="scoreDisplay">0</span></div>
+                <div class="stat-box">Best: <span id="highScoreDisplay">0</span></div>
+            </div>
+
+            <div class="sub-header">
+                <div class="lives-box">Lives: <span id="livesDisplay">❤❤❤❤❤</span></div>
+                <div class="death-box">Casualties: <span id="deathDisplay">0</span> 💀</div>
+            </div>
+
+            <div class="boost-container">
+                <div id="boostBar"></div>
+            </div>
+
+            <canvas id="gameCanvas"></canvas>
+
+            <div class="ui-layer">
+                <button class="btn pause-btn" onclick="togglePause()"><span class="pause-icon">⏸</span> PAUSE</button>
+            </div>
+
+            <div class="instructions">
+                <h3 style="margin-top:0; color:#f1c40f;">How to Play:</h3>
+                <p><strong>PC:</strong> Use Arrow Keys or WASD to swim. Press SPACE to speed boost.</p>
+                <p><strong>Mobile:</strong> Touch & Drag on the water to steer. Double-tap to boost.</p>
+                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 10px 0;">
+                <p>🐊 <strong>Avoid the Crocodile:</strong> It eats Mama Swan (Lose 1 Heart) and eats any babies it touches!</p>
+                <p>🐟 <strong>Pike Fish:</strong> Scares the babies away.</p>
+                <p>🪺 <strong>Goal:</strong> Lead the babies to the nest for points.</p>
+            </div>
         </div>
-
-        <div class="header">
-            <div class="stat-box">Saved: <span id="scoreDisplay">0</span></div>
-            <div class="stat-box">Best: <span id="highScoreDisplay">0</span></div>
-        </div>
-
-        <div class="sub-header">
-            <div class="lives-box">Lives: <span id="livesDisplay">❤❤❤❤❤</span></div>
-            <div class="death-box">Casualties: <span id="deathDisplay">0</span> 💀</div>
-        </div>
-
-        <div class="boost-container">
-            <div id="boostBar"></div>
-        </div>
-
-        <canvas id="gameCanvas"></canvas>
-
-        <div class="ui-layer">
-            <button class="btn pause-btn" onclick="togglePause()">⏸ PAUSE</button>
-        </div>
-
-        <div class="instructions">
-            <p><strong>PC:</strong> Arrow Keys/WASD to Swim | Space to Boost</p>
-            <p><strong>Mobile:</strong> Drag to Swim | Double Tap to Boost</p>
-            <p style="color: #e74c3c; font-weight: bold;">⚠️ The Crocodile eats YOU (Heart -1) and BABIES!</p>
+        
+        <div class="external-footer">
+            <a href="../index.html" class="back-link">← Back to Gaming Hub</a>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
