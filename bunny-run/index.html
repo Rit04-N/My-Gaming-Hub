@@ -13,6 +13,7 @@
             --bg-card: #2b0a16;
             --primary-pink: #ff4d6d;
             --text-main: #fff0f3;
+            --gold: #ffd700;
         }
 
         body { 
@@ -65,6 +66,16 @@
         .btn-stop { background: #880e4f; }
 
         .game-instructions { font-size: 0.9rem; color: #ffb3c1; margin-top: 10px; margin-bottom: 20px;}
+
+        /* Score Board Styling */
+        .score-board {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 15px;
+        }
+        #scoreDisplay { margin: 0; font-size: 1.5rem; }
+        #highScoreDisplay { margin: 5px 0 0 0; font-size: 1rem; color: var(--gold); opacity: 0.9; }
         
         /* Back button styling */
         .back-link {
@@ -94,14 +105,21 @@
             <button class="btn btn-stop" onclick="pauseGame()"> Pause</button>
         </div>
         
-        <h3 id="scoreDisplay">Carrots: 0</h3>
+        <div class="score-board">
+            <h3 id="scoreDisplay">Carrots: 0</h3>
+            <h4 id="highScoreDisplay">High Score: 0 🏆</h4>
+        </div>
     </div>
 
     <a href="../index.html" class="back-link">← Back to Gaming Hub</a>
 
     <script>
-        // --- 1. SOUND ENGINE (Synthesizer) ---
-        // This creates sound without needing external mp3 files
+        // --- 0. HIGH SCORE SYSTEM ---
+        // Load high score from local storage immediately
+        let savedHighScore = localStorage.getItem('bunnyHighScore') || 0;
+        document.getElementById("highScoreDisplay").innerText = "High Score: " + savedHighScore + " 🏆";
+
+        // --- 1. SOUND ENGINE ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
 
@@ -147,6 +165,17 @@
                 osc.start();
                 osc.stop(audioCtx.currentTime + 0.5);
             }
+            else if (type === 'highscore') {
+                // Happy high score sound
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+                osc.frequency.linearRampToValueAtTime(1200, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            }
         }
 
         // --- 2. GAME LOGIC ---
@@ -163,7 +192,7 @@
         };
         
         let obstacles = [];
-        let carrots = []; // Changed from hearts to carrots
+        let carrots = []; 
         let frame = 0;
 
         function updateGame() {
@@ -186,7 +215,6 @@
                 if (Math.random() < 0.3) {
                     obstacles.push({ x: canvas.width, y: GROUND_Y + 10, width: 20, height: 30 });
                 } else {
-                    // Random height for carrots
                     carrots.push({ x: canvas.width, y: [GROUND_Y + 10, 140, 60][Math.floor(Math.random()*3)], width: 30, height: 30 });
                 }
             }
@@ -213,6 +241,8 @@
                 ctx.fillText("🌵", obs.x, obs.y + 30);
                 
                 if (isColliding(player, obs)) {
+                    // Check for High Score before ending
+                    checkHighScore();
                     playSound('gameover');
                     gameOver();
                 }
@@ -238,6 +268,17 @@
 
             frame++; 
             animationId = requestAnimationFrame(updateGame);
+        }
+
+        function checkHighScore() {
+            if (score > savedHighScore) {
+                savedHighScore = score;
+                localStorage.setItem('bunnyHighScore', savedHighScore);
+                document.getElementById("highScoreDisplay").innerText = "High Score: " + savedHighScore + " 🏆";
+                playSound('highscore'); // Play celebration sound
+                return true; // Return true if it's a new record
+            }
+            return false;
         }
 
         function jump() {
@@ -292,13 +333,28 @@
             ctx.fillRect(0,0,canvas.width, canvas.height);
             
             ctx.textAlign = "center";
-            ctx.fillStyle = "#ff4d6d"; 
-            ctx.font = "bold 30px Arial"; 
-            ctx.fillText("Game Over!", canvas.width/2, canvas.height/2 - 20);
             
-            ctx.fillStyle = "#fff0f3"; 
-            ctx.font = "20px Arial"; 
-            ctx.fillText("You collected " + score + " carrots!", canvas.width/2, canvas.height/2 + 20);
+            // Check if this was a high score run
+            let isNewRecord = (score === savedHighScore && score > 0);
+
+            if (isNewRecord) {
+                ctx.fillStyle = "#ffd700"; // Gold
+                ctx.font = "bold 35px Arial"; 
+                ctx.fillText("NEW RECORD! 🏆", canvas.width/2, canvas.height/2 - 30);
+                
+                ctx.fillStyle = "#fff"; 
+                ctx.font = "24px Arial"; 
+                ctx.fillText("Score: " + score, canvas.width/2, canvas.height/2 + 20);
+            } else {
+                ctx.fillStyle = "#ff4d6d"; 
+                ctx.font = "bold 30px Arial"; 
+                ctx.fillText("Game Over!", canvas.width/2, canvas.height/2 - 20);
+                
+                ctx.fillStyle = "#fff0f3"; 
+                ctx.font = "20px Arial"; 
+                ctx.fillText("You collected " + score + " carrots", canvas.width/2, canvas.height/2 + 20);
+            }
+            
             ctx.textAlign = "start";
         }
 
