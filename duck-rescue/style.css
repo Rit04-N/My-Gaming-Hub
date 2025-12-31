@@ -1,0 +1,80 @@
+:root {
+    --pond: #2980b9;
+    --water: #3498db;
+    --accent: #f1c40f;
+}
+
+body {
+    margin: 0;
+    background-color: #050d08;
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    touch-action: none;
+}
+
+.main-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; }
+
+.game-container {
+    background: var(--pond);
+    padding: 15px;
+    border-radius: 20px;
+    border: 4px solid white;
+    text-align: center;
+    position: relative;
+    width: 90%;
+    max-width: 420px;
+}
+
+.game-title { color: var(--accent); margin: 5px 0; text-shadow: 2px 2px #000; }
+
+.header { display: flex; justify-content: space-around; margin-bottom: 10px; font-weight: bold; }
+
+canvas {
+    background: var(--water);
+    display: block;
+    margin: auto;
+    border-radius: 15px;
+    width: 100% !important;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.3);
+}
+
+/* Overlays */
+.overlay {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 18px;
+}
+
+.ui-layer { margin-top: 15px; display: flex; gap: 10px; justify-content: center; }
+
+.btn {
+    padding: 12px 20px;
+    border-radius: 50px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.quack-btn { background: var(--accent); color: #000; }
+.pause-btn { background: #ecf0f1; color: #333; }
+
+.back-link {
+    color: var(--accent);
+    text-decoration: none;
+    margin-top: 20px;
+    display: block;
+    font-weight: bold;
+}
