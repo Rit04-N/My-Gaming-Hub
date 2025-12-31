@@ -2,41 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carrots | Play Online</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Duck Rescue | Survival Mode</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="game-container">
-        <h1 style="color: var(--pink); margin-top: 0; margin-bottom: 20px; font-size: 2.5rem; text-shadow: 0 0 15px rgba(255, 77, 109, 0.5);">Carrots</h1>
+        <h1 class="game-title">DUCK RESCUE</h1>
 
-        <div id="gameOverOverlay" class="overlay">
-            <h1>GAME OVER</h1>
-            <p id="finalScoreText">Carrots: 0</p>
+        <div id="statusOverlay" class="overlay">
+            <h1 id="statusTitle">READY?</h1>
             <p id="highScoreText">High Score: 0</p>
-            <button class="btn start-btn" onclick="hideOverlayAndStart()">Play Again 🥕</button>
-            <a href="../index.html" style="color: white; margin-top: 15px; text-decoration: none; font-size: 0.9rem; opacity: 0.8;">← Back to Hub</a>
+            <p id="finalDeathText" style="font-size: 0.9rem; color: #e74c3c;"></p>
+            <button class="btn start-btn" onclick="startGame()">▶ START GAME</button>
+            <a href="../index.html" class="back-link">← Back to Hub</a>
         </div>
 
         <div class="header">
-            <h2 id="scoreDisplay">Carrots: 0</h2>
+            <div class="stat-box">Saved: <span id="scoreDisplay">0</span></div>
+            <div class="stat-box">Best: <span id="highScoreDisplay">0</span></div>
         </div>
 
-        <canvas id="gameCanvas" width="600" height="300"></canvas>
+        <div class="sub-header">
+            <div class="lives-box">Lives: <span id="livesDisplay">❤❤❤❤❤</span></div>
+            <div class="death-box">Lost: <span id="deathDisplay">0</span> 💀</div>
+        </div>
+
+        <div class="boost-container">
+            <div id="boostBar"></div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
 
         <div class="ui-layer">
-            <button class="btn start-btn" onclick="startGame()">▶ Start / Restart</button>
-            <button class="btn pause-btn" onclick="pauseGame()">⏸ Pause</button>
+            <button class="btn pause-btn" onclick="togglePause()">⏸ PAUSE</button>
         </div>
 
         <div class="instructions">
-            <p>Press <strong>Space</strong> or <strong>Tap</strong> to Jump</p>
-            <p>Double jump to reach high carrots! Avoid the cacti 🌵</p>
-            <div style="margin-top: 15px;">
-                <a href="../index.html" style="color: var(--pink); text-decoration: none; font-weight: bold;">← Back to Hub</a>
-            </div>
+            <p><strong>PC:</strong> Arrow Keys/WASD to Swim | Space to Boost</p>
+            <p><strong>Mobile:</strong> Drag to Swim | Double Tap to Boost</p>
+            <p style="color: #e74c3c;">⚠️ The Crocodile eats YOU and the BABIES!</p>
         </div>
     </div>
 
