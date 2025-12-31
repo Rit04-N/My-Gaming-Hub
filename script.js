@@ -8,6 +8,55 @@ let frame = 0;
 
 const GROUND_Y = 220;
 
+// --- AUDIO ENGINE ---
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new AudioContext();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+function playSound(type) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    if (type === 'jump') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+    } 
+    else if (type === 'collect') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.2);
+    }
+    else if (type === 'gameover') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.5);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5);
+    }
+}
+
 // Player Settings
 let player = { 
     x: 50, 
@@ -41,7 +90,7 @@ function updateGame() {
         player.jumpCount = 0; 
     }
     
-    // Spawn Logic (Cacti and Hearts)
+    // Spawn Logic
     if (frame % 90 === 0) {
         if (Math.random() < 0.3) {
             obstacles.push({ x: canvas.width, y: GROUND_Y + 10, width: 20, height: 30 });
@@ -68,7 +117,7 @@ function updateGame() {
         if (checkCollision(player, obstacles[i])) {
             gameOver();
         }
-        if (obstacles[i].x < -50) obstacles.splice(i, 1);
+        if (obstacles[i] && obstacles[i].x < -50) obstacles.splice(i, 1);
     }
 
     // Move and Draw Hearts
@@ -79,6 +128,7 @@ function updateGame() {
         if (checkCollision(player, hearts[i])) {
             hearts.splice(i, 1); 
             score++; 
+            playSound('collect'); // SOUND: Collect Heart
             document.getElementById("scoreDisplay").innerText = "Hearts: " + score;
         }
         if (hearts[i] && hearts[i].x < -50) hearts.splice(i, 1);
@@ -101,17 +151,19 @@ function jump() {
         player.dy = player.jumpPower; 
         player.grounded = false; 
         player.jumpCount = 1; 
+        playSound('jump'); // SOUND: Jump
     } else if (player.jumpCount === 1) { 
         player.dy = player.doubleJumpPower; 
         player.jumpCount = 2; 
+        playSound('jump'); // SOUND: Double Jump
     }
 }
 
 function startGame() {
+    initAudio(); // Initialize Audio on first click
     if (gameRunning && !isPaused) return;
     if (isPaused) { isPaused = false; updateGame(); return; }
     
-    // Reset Game State
     player.y = GROUND_Y;
     obstacles = [];
     hearts = [];
@@ -135,11 +187,22 @@ function pauseGame() {
 }
 
 function gameOver() {
+    playSound('gameover'); // SOUND: Death
     gameRunning = false;
     cancelAnimationFrame(animationId);
-    alert("Game Over! Score: " + score);
+    setTimeout(() => {
+        alert("Game Over! Score: " + score);
+    }, 100);
 }
 
 // Input Listeners
-document.addEventListener("keydown", (e) => { if (e.code === "Space") jump(); });
-canvas.addEventListener("touchstart", (e) => { e.preventDefault(); jump(); });
+document.addEventListener("keydown", (e) => { 
+    if (e.code === "Space") {
+        e.preventDefault(); 
+        jump();
+    }
+});
+canvas.addEventListener("touchstart", (e) => { 
+    e.preventDefault(); 
+    jump(); 
+});
