@@ -1,30 +1,205 @@
+/* --- 1. GLOBAL VARIABLES & RESET --- */
 :root {
-    --pond: #2980b9; --water: #3498db; --accent: #f1c40f; --danger: #e74c3c; --nest: #2ecc71;
+    --pond-bg: #2980b9;      /* Darker Blue for Container */
+    --water-bg: #3498db;     /* Lighter Blue for Canvas */
+    --accent: #f1c40f;       /* Yellow/Gold for Text */
+    --danger: #e74c3c;       /* Red for Hearts/Warning */
+    --nest-green: #2ecc71;   /* Green for Start Button/Nest */
+    --text-white: #ffffff;
+    --ui-bg: rgba(0, 0, 0, 0.25); /* Semi-transparent background for stats */
 }
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    margin: 0; background-color: #050d08; color: white;
-    font-family: 'Segoe UI', sans-serif; display: flex;
-    justify-content: center; align-items: center; min-height: 100vh;
-    overflow: hidden; touch-action: none;
+    margin: 0;
+    padding: 0;
+    background-color: #050d08; /* Very dark background for the page */
+    color: var(--text-white);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    /* Critical for mobile: stops the page from scrolling while playing */
+    touch-action: none; 
 }
+
+/* --- 2. GAME CONTAINER --- */
 .game-container {
-    background: var(--pond); padding: 15px; border-radius: 20px;
-    border: 4px solid white; text-align: center; position: relative;
-    width: 95%; max-width: 450px;
+    background: var(--pond-bg);
+    padding: 20px;
+    border-radius: 20px;
+    border: 4px solid white;
+    text-align: center;
+    position: relative;
+    width: 95%;
+    max-width: 450px; /* Limits size on big screens */
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.6);
 }
+
+.game-title { 
+    color: var(--accent); 
+    margin: 5px 0 15px 0; 
+    text-shadow: 2px 2px 0px #000; 
+    font-size: 2rem; 
+    letter-spacing: 2px;
+}
+
+/* --- 3. STATS HEADERS (HUD) --- */
 .header, .sub-header {
-    display: flex; justify-content: space-around; margin-bottom: 8px;
-    background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 8px;
+    font-weight: bold;
+    background: var(--ui-bg);
+    padding: 10px;
+    border-radius: 12px;
 }
-.lives-box span { color: var(--danger); font-size: 1.2rem; }
-.boost-container { width: 100%; height: 8px; background: rgba(0,0,0,0.3); margin-bottom: 10px; overflow: hidden; }
-#boostBar { width: 100%; height: 100%; background: var(--accent); transition: width 0.1s; }
-canvas { background: var(--water); display: block; border-radius: 15px; width: 100%; aspect-ratio: 1/1; }
+
+.stat-box span { 
+    color: var(--accent); 
+    font-size: 1.1rem;
+}
+
+.lives-box span { 
+    color: var(--danger); 
+    font-size: 1.3rem; 
+    letter-spacing: 3px; 
+    text-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+}
+
+.death-box span { 
+    color: #bdc3c7; /* Light Gray */
+}
+
+/* --- 4. BOOST STAMINA BAR --- */
+.boost-container {
+    width: 100%;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+#boostBar {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, var(--accent), #e67e22);
+    transition: width 0.1s linear;
+}
+
+/* --- 5. THE CANVAS (GAME WINDOW) --- */
+canvas {
+    background: var(--water-bg);
+    display: block;
+    margin: auto;
+    border-radius: 15px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1; /* Keeps it square responsive */
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+    cursor: crosshair;
+    border-bottom: 4px solid rgba(0,0,0,0.2);
+}
+
+/* --- 6. OVERLAY (PAUSE / GAME OVER) --- */
 .overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9); z-index: 10; display: flex;
-    flex-direction: column; justify-content: center; align-items: center; border-radius: 18px;
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(15, 15, 20, 0.95);
+    z-index: 20;
+    display: flex; /* Script toggles this to 'none' */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 16px; /* Matches container radius minus border */
+    backdrop-filter: blur(5px);
 }
-.btn { padding: 12px 25px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; color: white; }
-.start-btn { background: var(--nest); box-shadow: 0 4px 0 #27ae60; }
-.pause-btn { background: #95a5a6; }
+
+.overlay h1 { 
+    color: var(--accent); 
+    font-size: 3rem; 
+    margin-bottom: 15px; 
+    text-transform: uppercase;
+}
+
+.overlay p {
+    font-size: 1.2rem;
+    margin: 5px 0;
+    color: #ecf0f1;
+}
+
+/* --- 7. BUTTONS --- */
+.ui-layer { 
+    margin-top: 20px; 
+}
+
+.btn {
+    padding: 15px 30px;
+    border-radius: 50px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    color: white;
+    font-size: 1rem;
+    transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.btn:active { 
+    transform: scale(0.95); 
+}
+
+.start-btn { 
+    background: var(--nest-green); 
+    box-shadow: 0 5px 0 #27ae60;
+    margin-top: 20px;
+    font-size: 1.2rem;
+}
+
+.start-btn:hover {
+    background: #2ecc71;
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.6);
+}
+
+.pause-btn { 
+    background: #95a5a6; 
+    color: #2c3e50; 
+    box-shadow: 0 5px 0 #7f8c8d;
+    width: 100%;
+}
+
+/* --- 8. FOOTER & INSTRUCTIONS --- */
+.instructions {
+    margin-top: 20px;
+    font-size: 0.85rem;
+    opacity: 0.9;
+    line-height: 1.6;
+    background: rgba(0,0,0,0.2);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.back-link {
+    color: var(--accent);
+    text-decoration: none;
+    margin-top: 25px;
+    display: block;
+    opacity: 0.8;
+    font-weight: bold;
+    transition: opacity 0.2s;
+}
+
+.back-link:hover {
+    opacity: 1;
+}
