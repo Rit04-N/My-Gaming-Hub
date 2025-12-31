@@ -9,6 +9,7 @@ let nextDirection = "RIGHT";
 let gameInterval;
 let score = 0;
 let highScore = localStorage.getItem("snakeHighScore") || 0;
+let isPaused = false; // NEW: Pause state
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
@@ -25,14 +26,27 @@ function playSound(freq, type) {
     osc.start(); osc.stop(audioCtx.currentTime + 0.1);
 }
 
+// NEW: Toggle Pause Function
+function togglePause() {
+    if (snake.length === 0) return; // Don't pause if game hasn't started
+    isPaused = !isPaused;
+    if (isPaused) {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        ctx.font = "40px Arial";
+        ctx.fillText("PAUSED", canvas.width / 2 - 80, canvas.height / 2);
+    }
+}
+
 function startGame() {
     initAudio();
+    isPaused = false; // Reset pause state
     document.getElementById("gameOverOverlay").style.display = "none";
     score = 0;
     document.getElementById("scoreDisplay").innerText = "Apples: 0";
     direction = "RIGHT";
     nextDirection = "RIGHT";
-    // Centered start for 600x600 area
     snake = [
         { x: 15 * box, y: 15 * box },
         { x: 14 * box, y: 15 * box },
@@ -40,7 +54,6 @@ function startGame() {
     ]; 
     spawnFood();
     if (gameInterval) clearInterval(gameInterval);
-    // SLOWER SPEED: 150ms instead of 100ms
     gameInterval = setInterval(draw, 150); 
 }
 
@@ -52,6 +65,12 @@ function spawnFood() {
 }
 
 document.addEventListener("keydown", (e) => {
+    // Space bar to pause
+    if (e.code === "Space") {
+        e.preventDefault();
+        togglePause();
+    }
+    if (isPaused) return; // Prevent turning while paused
     if (e.keyCode == 37 && direction != "RIGHT") nextDirection = "LEFT";
     else if (e.keyCode == 38 && direction != "DOWN") nextDirection = "UP";
     else if (e.keyCode == 39 && direction != "LEFT") nextDirection = "RIGHT";
@@ -60,19 +79,14 @@ document.addEventListener("keydown", (e) => {
 
 function drawSnakePart(part, index) {
     const isHead = index === 0;
-    const radius = isHead ? 10 : 6; // Head is slightly bigger/rounder
-    
+    const radius = isHead ? 10 : 6;
     ctx.fillStyle = isHead ? "#2ecc71" : "#27ae60";
-    
-    // Draw rounded body part
     ctx.beginPath();
     ctx.roundRect(part.x + 1, part.y + 1, box - 2, box - 2, radius);
     ctx.fill();
 
-    // Draw Eyes if it's the head
     if (isHead) {
         ctx.fillStyle = "white";
-        // Left Eye
         if (direction === "UP" || direction === "DOWN") {
             ctx.beginPath(); ctx.arc(part.x + 6, part.y + 10, 3, 0, Math.PI * 2); ctx.fill();
             ctx.beginPath(); ctx.arc(part.x + 14, part.y + 10, 3, 0, Math.PI * 2); ctx.fill();
@@ -84,21 +98,19 @@ function drawSnakePart(part, index) {
 }
 
 function draw() {
+    if (isPaused) return; // STOP DRAWING/MOVING IF PAUSED
+
     direction = nextDirection;
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Render snake parts
     snake.forEach((part, index) => drawSnakePart(part, index));
 
-    // Render Food (Apple)
-    ctx.fillStyle = "#ff4d6d"; // Match Hub Pink
+    // Draw Apple
+    ctx.fillStyle = "#ff4d6d";
     ctx.beginPath();
     ctx.arc(food.x + box/2, food.y + box/2, box/2 - 2, 0, Math.PI * 2);
     ctx.fill();
-    // Small leaf on apple
-    ctx.fillStyle = "#2ecc71";
-    ctx.fillRect(food.x + box/2, food.y + 2, 2, 4);
 
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
