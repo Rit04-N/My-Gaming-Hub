@@ -23,13 +23,13 @@
             color: #ff4d6d; 
             text-shadow: 0 0 25px rgba(255, 77, 109, 0.6); 
             font-size: 4rem; 
-            margin-bottom: 50px;
+            margin-bottom: 30px; /* Reduced slightly for mobile layout */
             letter-spacing: 2px;
             position: relative;
             z-index: 2;
         }
 
-        /* --- 2. PC BACKGROUND DANCERS --- */
+        /* --- 2. PC BACKGROUND DANCERS (Hidden on Mobile) --- */
         .bg-dancer {
             position: fixed;
             bottom: 180px; 
@@ -42,6 +42,16 @@
         .giraffe-left { left: 2%; animation: pulse-dance 2s infinite alternate ease-in-out; }
         .bee-right { right: 2%; animation: pulse-dance-flipped 2s infinite alternate ease-in-out; }
 
+        /* --- 3. MOBILE DANCERS (Hidden on PC) --- */
+        .mobile-dancer {
+            display: none; /* Hidden by default */
+            width: 120px;
+            height: auto;
+            margin: 20px auto;
+            border-radius: 15px;
+            pointer-events: none;
+        }
+
         @keyframes pulse-dance {
             0% { transform: scale(1) translateY(0); }
             100% { transform: scale(1.1) translateY(-20px); }
@@ -52,7 +62,7 @@
             100% { transform: scaleX(-1) scale(1.1) translateY(-20px); }
         }
 
-        /* --- 3. THE GRID & CARDS --- */
+        /* --- 4. THE GRID & CARDS --- */
         .grid { 
             display: flex; 
             justify-content: center; 
@@ -67,7 +77,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
         }
 
         .card { 
@@ -93,64 +102,38 @@
         .snake-card { border-color: #2ecc71; background: rgba(10, 46, 25, 0.8); }
         .duck-card { border-color: #3498db; background: rgba(10, 31, 46, 0.8); }
 
-        .card:hover:not(.disabled) { 
+        .card:hover { 
             transform: translateY(-15px) scale(1.05); 
             color: black; 
         }
 
         .bunny-card:hover { background: #ff4d6d; box-shadow: 0 0 40px rgba(255, 77, 109, 0.4); }
         .snake-card:hover { background: #2ecc71; box-shadow: 0 0 40px rgba(46, 204, 113, 0.4); }
+        .duck-card:hover { background: #3498db; box-shadow: 0 0 40px rgba(52, 152, 219, 0.4); }
         
-        /* --- NEW: Maintenance Styles for Duck Card --- */
-        .card.disabled {
-            cursor: not-allowed;
-            opacity: 0.7;
-            filter: saturate(0.4);
-        }
-
-        .status-badge {
-            margin-top: 15px;
-            background: #3498db;
-            color: white;
-            padding: 6px 18px;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 0.8rem;
-            animation: badge-pulse 1.5s infinite alternate;
-        }
-
-        @keyframes badge-pulse {
-            from { box-shadow: 0 0 5px rgba(52, 152, 219, 0.4); }
-            to { box-shadow: 0 0 15px rgba(52, 152, 219, 0.9); }
-        }
-
         .card h2 { margin: 10px 0; font-size: 1.8rem; }
         .card p { font-size: 1rem; opacity: 0.9; line-height: 1.4; }
 
-        /* Mobile GIF Styling */
-        .under-card-gif {
-            display: none;
-            width: 100px;
-            height: auto;
-            border-radius: 15px;
-        }
-
-        /* --- 4. RESPONSIVE LOGIC --- */
+        /* --- 5. RESPONSIVE LOGIC --- */
         @media (max-width: 600px) {
-            h1 { font-size: 2.5rem; }
-            .grid { gap: 40px; }
+            h1 { font-size: 2.5rem; margin-bottom: 10px; }
+            .grid { gap: 40px; margin-top: 10px; }
             .card { width: 85vw; padding: 40px 20px; }
+            
+            /* Hide PC dancers, Show Mobile dancers */
             .bg-dancer { display: none; }
-            .under-card-gif { display: block; }
+            .mobile-dancer { display: block; }
         }
     </style>
 </head>
 <body>
 
     <img src="Girafffee.gif" class="bg-dancer giraffe-left" alt="Giraffe">
-    <img src="dance.gif" class="bg-dancer bee-right" alt="Bee">
+    <img src="dance.gif" class="bg-dancer bee-right" alt="Flamingo">
 
     <h1>MY GAMING PORTAL</h1>
+
+    <img src="Girafffee.gif" class="mobile-dancer" alt="Giraffe Mobile">
     
     <div class="grid">
         <div class="card-group">
@@ -159,7 +142,6 @@
                 <h2>Carrots</h2>
                 <p>Collect carrots and avoid the cacti!</p>
             </a>
-            <img src="Girafffee.gif" class="under-card-gif" alt="Giraffe Under">
         </div>
 
         <div class="card-group">
@@ -168,21 +150,20 @@
                 <h2>Retro Snake</h2>
                 <p>Eat the apples and grow as long as you can!</p>
             </a>
-            <img src="dance.gif" class="under-card-gif" alt="Bee Under">
         </div>
 
         <div class="card-group">
-            <div class="card duck-card disabled">
+            <a href="duck-rescue/index.html" class="card duck-card">
                 <span>🦢</span>
                 <h2>Duck Rescue</h2>
                 <p>Lead the babies to the nest! Avoid the 🐟!</p>
-                <div class="status-badge">ONLINE SOON</div>
-            </div>
-            <img src="dance.gif" class="under-card-gif" alt="Duck Under" style="filter: grayscale(1); opacity: 0.5;">
+            </a>
         </div>
     </div>
 
-    <p style="margin-top: 60px; opacity: 0.5; font-size: 0.9rem; position: relative; z-index: 2;">
+    <img src="dance.gif" class="mobile-dancer" alt="Flamingo Mobile" style="margin-top: 40px;">
+
+    <p style="margin-top: 30px; opacity: 0.5; font-size: 0.9rem; position: relative; z-index: 2;">
         Select a game to begin your adventure.
     </p>
 
