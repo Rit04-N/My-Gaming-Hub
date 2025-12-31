@@ -1,87 +1,109 @@
-/* --- 1. GLOBAL VARIABLES & RESET --- */
 :root {
-    --pink: #ff4d6d;
-    --dark-pink: #2b0a16;
-    --text: #fff0f3;
-    --glow: rgba(255, 77, 109, 0.3);
+    --pond: #2980b9;
+    --water: #3498db;
+    --accent: #f1c40f;
+    --danger: #e74c3c;
+    --nest: #2ecc71;
+    --text: #ffffff;
 }
 
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
-    padding: 0;
-    background-color: #1a050a;
+    background-color: #050d08;
     color: var(--text);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     overflow: hidden;
+    touch-action: none;
 }
 
-/* --- 2. GAME LAYOUT --- */
 .game-container {
-    background: var(--dark-pink);
-    padding: 20px;
+    background: var(--pond);
+    padding: 15px;
     border-radius: 20px;
-    border: 2px solid var(--pink);
-    box-shadow: 0 0 30px var(--glow);
+    border: 4px solid white;
     text-align: center;
-    width: 95%;
-    max-width: 650px;
     position: relative;
+    width: 95%;
+    max-width: 450px;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.5);
 }
 
-/* --- 3. THE CANVAS --- */
-canvas {
-    background: linear-gradient(to bottom, #2b0a16, #4a192c);
+.game-title { 
+    color: var(--accent); 
+    margin: 5px 0 15px 0; 
+    text-shadow: 2px 2px #000; 
+    font-size: 2rem; 
+}
+
+/* --- STATS HEADERS --- */
+.header, .sub-header {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 8px;
+    font-weight: bold;
+    background: rgba(0,0,0,0.2);
+    padding: 8px;
     border-radius: 10px;
-    width: 100%;
-    height: auto;
-    border-bottom: 4px solid var(--pink);
-    cursor: pointer;
-    display: block;
 }
 
-/* --- 4. GAME OVER OVERLAY --- */
-.overlay {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
+.stat-box span { color: var(--accent); }
+.lives-box span { color: var(--danger); font-size: 1.2rem; }
+.death-box span { color: #bdc3c7; }
+
+/* --- BOOST BAR --- */
+.boost-container {
+    width: 100%;
+    height: 8px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 5px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+#boostBar {
     width: 100%;
     height: 100%;
-    background: rgba(26, 5, 10, 0.95);
+    background: linear-gradient(to right, var(--accent), #e67e22);
+    width: 100%;
+    transition: width 0.1s linear;
+}
+
+/* --- CANVAS --- */
+canvas {
+    background: var(--water);
+    display: block;
+    margin: auto;
+    border-radius: 15px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.3);
+    cursor: crosshair;
+}
+
+/* --- OVERLAY --- */
+.overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9);
     z-index: 10;
+    display: flex; /* Starts visible */
     flex-direction: column;
     justify-content: center;
     align-items: center;
     border-radius: 18px;
 }
 
-.overlay h1 {
-    color: var(--pink);
-    font-size: 3rem;
-    margin: 0;
-    text-shadow: 0 0 10px var(--pink);
-}
+.overlay h1 { color: var(--accent); font-size: 2.5rem; margin-bottom: 10px; }
 
-.overlay p {
-    font-size: 1.2rem;
-    margin: 10px 0;
-}
-
-/* --- 5. BUTTONS & UI --- */
-.ui-layer {
-    margin-top: 15px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
+/* --- BUTTONS --- */
+.ui-layer { margin-top: 15px; }
 
 .btn {
     padding: 12px 25px;
@@ -89,31 +111,25 @@ canvas {
     border: none;
     font-weight: bold;
     cursor: pointer;
-    transition: transform 0.2s, background 0.3s;
+    text-transform: uppercase;
     color: white;
 }
 
-.start-btn { background: var(--pink); }
-.start-btn:hover { box-shadow: 0 0 15px var(--pink); }
-.pause-btn { background: #880e4f; }
-.btn:active { transform: scale(0.9); }
+.start-btn { background: var(--nest); font-size: 1.2rem; box-shadow: 0 4px 0 #27ae60; }
+.pause-btn { background: #95a5a6; color: #333; box-shadow: 0 4px 0 #7f8c8d; }
+.btn:active { transform: scale(0.95); }
 
-/* --- 6. TEXT & INSTRUCTIONS --- */
 .instructions {
     margin-top: 15px;
-    font-size: 0.85rem;
-    color: #ffb3c1;
+    font-size: 0.8rem;
+    opacity: 0.8;
     line-height: 1.4;
 }
 
-#scoreDisplay {
-    margin: 0 0 10px 0;
-    color: var(--pink);
-}
-
-/* --- 7. MOBILE OPTIMIZATION --- */
-@media (max-width: 480px) {
-    .overlay h1 { font-size: 2rem; }
-    .btn { padding: 10px 18px; font-size: 0.9rem; }
-    h1 { font-size: 1.8rem !important; }
+.back-link {
+    color: var(--accent);
+    text-decoration: none;
+    margin-top: 20px;
+    display: block;
+    opacity: 0.7;
 }
