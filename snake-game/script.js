@@ -20,6 +20,7 @@ function initAudio() {
 }
 
 function playNote(freq, startTime, duration, wave = 'sine') {
+    if (!audioCtx) return;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = wave;
@@ -61,15 +62,25 @@ function startGame() {
 }
 
 function togglePause() {
-    if (snake.length === 0) return;
+    // Prevent pausing if game hasn't started or is over
+    if (snake.length === 0 || document.getElementById("gameOverOverlay").style.display === "flex") return;
+    
     isPaused = !isPaused;
     playMelody('pause');
+    
+    // Visual feedback for shake
+    const btn = document.getElementById("mobileShakeBtn");
+    btn.classList.add("shake-active");
+    setTimeout(() => btn.classList.remove("shake-active"), 300);
+
     if (isPaused) {
+        // Draw Pause Screen Overlay on Canvas
         ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "white";
         ctx.font = "40px Arial";
-        ctx.fillText("PAUSED", canvas.width / 2 - 80, canvas.height / 2);
+        ctx.textAlign = "center";
+        ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
     }
 }
 
@@ -96,6 +107,10 @@ canvas.addEventListener("touchstart", (e) => {
 canvas.addEventListener("touchend", (e) => {
     let diffX = e.changedTouches[0].screenX - touchStartX;
     let diffY = e.changedTouches[0].screenY - touchStartY;
+    
+    // Only move if swipe is significant (avoids accidental taps)
+    if (Math.abs(diffX) < 10 && Math.abs(diffY) < 10) return;
+
     if (Math.abs(diffX) > Math.abs(diffY)) {
         if (diffX > 30 && direction != "LEFT") nextDirection = "RIGHT";
         else if (diffX < -30 && direction != "RIGHT") nextDirection = "LEFT";
@@ -164,3 +179,44 @@ function showGameOver() {
     document.getElementById("highScoreText").innerText = "High Score: " + highScore;
     document.getElementById("gameOverOverlay").style.display = "flex";
 }
+
+// --- SHAKE TO PAUSE (MOBILE ONLY) ---
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Check if Mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile && window.DeviceMotionEvent) {
+        let lastX = 0, lastY = 0, lastZ = 0;
+        let lastTime = 0;
+        const shakeThreshold = 20; // HIGHER = Less Sensitive (Harder shake required)
+        const debounceTime = 1000; // 1 Second cooldown
+        let lastFireTime = 0;
+
+        window.addEventListener('devicemotion', (event) => {
+            let currentTime = new Date().getTime();
+
+            if ((currentTime - lastTime) > 100) {
+                let diffTime = currentTime - lastTime;
+                lastTime = currentTime;
+
+                let x = event.accelerationIncludingGravity.x;
+                let y = event.accelerationIncludingGravity.y;
+                let z = event.accelerationIncludingGravity.z;
+
+                let speed = Math.abs(x + y + z - lastX - lastY - lastZ) / diffTime * 10000;
+
+                if (speed > shakeThreshold) {
+                    // Check Cooldown
+                    if ((currentTime - lastFireTime) > debounceTime) {
+                        togglePause(); // Call the main game pause function
+                        lastFireTime = currentTime;
+                    }
+                }
+
+                lastX = x;
+                lastY = y;
+                lastZ = z;
+            }
+        });
+    }
+});
