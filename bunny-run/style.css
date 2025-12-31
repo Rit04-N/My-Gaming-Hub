@@ -20,7 +20,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow: hidden; /* Prevents scrolling during gameplay */
+    overflow: hidden;
 }
 
 /* --- 2. GAME LAYOUT --- */
@@ -33,10 +33,10 @@ body {
     text-align: center;
     width: 95%;
     max-width: 650px;
-    position: relative; /* Essential for the Overlay positioning */
+    position: relative;
 }
 
-/* --- 3. THE CANVAS (Game Window) --- */
+/* --- 3. THE CANVAS --- */
 canvas {
     background: linear-gradient(to bottom, #2b0a16, #4a192c);
     border-radius: 10px;
@@ -49,7 +49,7 @@ canvas {
 
 /* --- 4. GAME OVER OVERLAY --- */
 .overlay {
-    display: none; /* Controlled by JavaScript (flex) */
+    display: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -93,21 +93,10 @@ canvas {
     color: white;
 }
 
-.start-btn { 
-    background: var(--pink); 
-}
-
-.start-btn:hover {
-    box-shadow: 0 0 15px var(--pink);
-}
-
-.pause-btn { 
-    background: #880e4f; 
-}
-
-.btn:active { 
-    transform: scale(0.9); 
-}
+.start-btn { background: var(--pink); }
+.start-btn:hover { box-shadow: 0 0 15px var(--pink); }
+.pause-btn { background: #880e4f; }
+.btn:active { transform: scale(0.9); }
 
 /* --- 6. TEXT & INSTRUCTIONS --- */
 .instructions {
@@ -126,5 +115,5 @@ canvas {
 @media (max-width: 480px) {
     .overlay h1 { font-size: 2rem; }
     .btn { padding: 10px 18px; font-size: 0.9rem; }
-    h1 { font-size: 1.8rem !important; } /* Adjusts the game title */
+    h1 { font-size: 1.8rem !important; }
 }
