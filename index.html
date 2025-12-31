@@ -1,1 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bunny Love Runner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+    <div class="game-wrapper">
+        <h2 id="scoreDisplay">Hearts: 0</h2>
+        <canvas id="gameCanvas" width="600" height="300"></canvas>
+        
+        <div class="controls">
+            <button class="btn" onclick="startGame()">Start Game</button>
+            <button class="btn btn-pause" onclick="pauseGame()">Pause</button>
+        </div>
+        <p class="hint">Tap or Press Space to Jump (Double Jump allowed!)</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
