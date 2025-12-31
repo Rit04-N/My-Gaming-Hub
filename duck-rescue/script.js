@@ -3,9 +3,8 @@ const ctx = canvas.getContext("2d");
 canvas.width = 400;
 canvas.height = 400;
 
-// Game Settings
-let mamaDuck = { x: 200, y: 200 };
-let target = { x: 200, y: 200 };
+// Game State
+let mamaDuck = { x: 200, y: 200, baseSpeed: 3, boostSpeed: 7, size: 30 };
 let ducklings = [];
 let lostDuckling = { x: 100, y: 100 };
 let history = [];
@@ -14,24 +13,67 @@ let score = 0;
 let highScore = localStorage.getItem("duckRescueHighScore") || 0;
 let isPaused = false;
 
+// Boost Logic
+let boostStamina = 100;
+let isBoosting = false;
+
 // Enemies
 let pikeFish = { x: -50, y: 150, speed: 2.2 };
 let crocodile = { x: 500, y: 300, speed: -1.0 };
 
-// Setup Displays
+// Controls State
+let keys = {};
+let touchStartX = null;
+let touchStartY = null;
+
+// Initialize Display
 document.getElementById("highScoreDisplay").innerText = highScore;
 
-// --- INPUTS ---
-function updateTarget(e) {
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    target.x = (clientX - rect.left) * (canvas.width / rect.width);
-    target.y = (clientY - rect.top) * (canvas.height / rect.height);
-}
+// --- CONTROL LISTENERS ---
 
-canvas.addEventListener("mousemove", updateTarget);
-canvas.addEventListener("touchmove", (e) => { e.preventDefault(); updateTarget(e); }, {passive: false});
+// PC: Keyboard
+window.addEventListener("keydown", (e) => { 
+    keys[e.code] = true;
+    if (e.code === "Space") isBoosting = true;
+});
+window.addEventListener("keyup", (e) => { 
+    keys[e.code] = false;
+    if (e.code === "Space") isBoosting = false;
+});
+
+// Mobile: Swipe & Tap
+canvas.addEventListener("touchstart", (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    
+    // Tap Swan for Speed
+    const rect = canvas.getBoundingClientRect();
+    const tx = (touchStartX - rect.left) * (canvas.width / rect.width);
+    const ty = (touchStartY - rect.top) * (canvas.height / rect.height);
+    if (Math.hypot(mamaDuck.x - tx, mamaDuck.y - ty) < 40) isBoosting = true;
+}, {passive: false});
+
+canvas.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+    if (!touchStartX || !touchStartY) return;
+
+    let diffX = e.touches[0].clientX - touchStartX;
+    let diffY = e.touches[0].clientY - touchStartY;
+
+    // Reset keys
+    keys["ArrowLeft"] = keys["ArrowRight"] = keys["ArrowUp"] = keys["ArrowDown"] = false;
+
+    // Swipe Threshold
+    if (Math.abs(diffX) > 15) keys[diffX > 0 ? "ArrowRight" : "ArrowLeft"] = true;
+    if (Math.abs(diffY) > 15) keys[diffY > 0 ? "ArrowDown" : "ArrowUp"] = true;
+}, {passive: false});
+
+canvas.addEventListener("touchend", () => {
+    touchStartX = null;
+    touchStartY = null;
+    keys = {};
+    isBoosting = false;
+});
 
 function togglePause() {
     isPaused = !isPaused;
@@ -40,8 +82,7 @@ function togglePause() {
 }
 
 function quack() {
-    // Scare effect: moves pike fish back to start
-    pikeFish.x = -100;
+    pikeFish.x = -150; // Scare fish away
 }
 
 function spawnBaby() {
@@ -49,60 +90,68 @@ function spawnBaby() {
     lostDuckling.y = 40 + Math.random() * 320;
 }
 
-// --- CORE ENGINE ---
+// --- ENGINE ---
+
 function update() {
     if (isPaused) return;
 
-    // Mama Movement
-    mamaDuck.x += (target.x - mamaDuck.x) * 0.1;
-    mamaDuck.y += (target.y - mamaDuck.y) * 0.1;
+    // 1. Handle Speed & Stamina
+    let currentSpeed = mamaDuck.baseSpeed;
+    if (isBoosting && boostStamina > 0) {
+        currentSpeed = mamaDuck.boostSpeed;
+        boostStamina -= 1.5;
+    } else {
+        isBoosting = false;
+        if (boostStamina < 100) boostStamina += 0.5;
+    }
+    document.getElementById("boostBar").style.width = boostStamina + "%";
 
-    // History for trail
+    // 2. Movement logic
+    if (keys["ArrowLeft"] || keys["KeyA"]) mamaDuck.x -= currentSpeed;
+    if (keys["ArrowRight"] || keys["KeyD"]) mamaDuck.x += currentSpeed;
+    if (keys["ArrowUp"] || keys["KeyW"]) mamaDuck.y -= currentSpeed;
+    if (keys["ArrowDown"] || keys["KeyS"]) mamaDuck.y += currentSpeed;
+
+    // Boundaries
+    mamaDuck.x = Math.max(20, Math.min(380, mamaDuck.x));
+    mamaDuck.y = Math.max(20, Math.min(380, mamaDuck.y));
+
+    // 3. Trail History
     history.unshift({x: mamaDuck.x, y: mamaDuck.y});
     if (history.length > 200) history.pop();
 
-    // Pike Fish (The Thief)
+    // 4. Enemy AI
     pikeFish.x += pikeFish.speed;
-    if (pikeFish.x > 450) {
-        pikeFish.x = -50;
-        pikeFish.y = 50 + Math.random() * 300;
-    }
+    if (pikeFish.x > 450) { pikeFish.x = -50; pikeFish.y = 50 + Math.random() * 300; }
 
-    // Crocodile (The Wall)
     crocodile.x += crocodile.speed;
-    if (crocodile.x < -100) {
-        crocodile.x = 500;
-        crocodile.y = 50 + Math.random() * 300;
-    }
+    if (crocodile.x < -100) { crocodile.x = 500; crocodile.y = 50 + Math.random() * 300; }
 
-    // Collect Baby
+    // 5. Collision: Baby
     if (Math.hypot(mamaDuck.x - lostDuckling.x, mamaDuck.y - lostDuckling.y) < 25) {
         ducklings.push({});
         spawnBaby();
         document.getElementById("trailDisplay").innerText = ducklings.length;
     }
 
-    // Nest Delivery
-    if (Math.hypot(mamaDuck.x - nest.x, mamaDuck.y - nest.y) < nest.size) {
-        if (ducklings.length > 0) {
-            score += ducklings.length;
-            ducklings = [];
-            document.getElementById("scoreDisplay").innerText = score;
-            document.getElementById("trailDisplay").innerText = "0";
-            
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem("duckRescueHighScore", highScore);
-                document.getElementById("highScoreDisplay").innerText = highScore;
-            }
+    // 6. Collision: Nest
+    if (Math.hypot(mamaDuck.x - nest.x, mamaDuck.y - nest.y) < nest.size && ducklings.length > 0) {
+        score += ducklings.length;
+        ducklings = [];
+        document.getElementById("scoreDisplay").innerText = score;
+        document.getElementById("trailDisplay").innerText = "0";
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("duckRescueHighScore", highScore);
+            document.getElementById("highScoreDisplay").innerText = highScore;
         }
     }
 
-    // Fish hits trail
+    // 7. Collision: Fish hits trail
     ducklings.forEach((_, i) => {
         let idx = (i + 1) * 15;
         if (history[idx] && Math.hypot(history[idx].x - pikeFish.x, history[idx].y - pikeFish.y) < 20) {
-            ducklings = ducklings.slice(0, i); // Scares away tail
+            ducklings = ducklings.slice(0, i);
             document.getElementById("trailDisplay").innerText = ducklings.length;
         }
     });
@@ -124,7 +173,14 @@ function draw() {
     // Mama Swan
     ctx.save();
     ctx.translate(mamaDuck.x, mamaDuck.y);
-    if (target.x < mamaDuck.x) ctx.scale(-1, 1);
+    if (keys["ArrowLeft"]) ctx.scale(-1, 1);
+    
+    // Boost Glow
+    if (isBoosting) {
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = "white";
+    }
+    
     ctx.font = "40px serif";
     ctx.fillText("🦢", -20, 15);
     ctx.restore();
