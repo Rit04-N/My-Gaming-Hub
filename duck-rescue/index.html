@@ -34,7 +34,6 @@
             align-items: center; padding: 15px; gap: 20px;
         }
 
-        /* --- GAME COLUMN --- */
         .game-column { width: 100%; max-width: 450px; position: relative; }
 
         .game-container {
@@ -45,7 +44,6 @@
             overflow: hidden; 
         }
 
-        /* --- TOP BAR --- */
         .top-bar {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 10px; position: relative; z-index: 60;
@@ -61,7 +59,6 @@
             display: flex; justify-content: center; align-items: center;
         }
 
-        /* --- HUD --- */
         .hud-grid {
             display: grid; grid-template-columns: 1fr 1.5fr 1fr;
             gap: 5px; margin-bottom: 8px;
@@ -74,7 +71,6 @@
         .sub-header { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;}
         .death-box span { color: #ecf0f1; font-weight: bold; }
 
-        /* --- CANVAS --- */
         .boost-container {
             width: 100%; height: 8px; background: rgba(0,0,0,0.5);
             border-radius: 4px; margin-bottom: 8px; overflow: hidden;
@@ -91,40 +87,39 @@
         /* --- OVERLAYS --- */
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 15, 20, 0.96); z-index: 50;
+            background: rgba(15, 15, 20, 0.98); z-index: 50;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             border-radius: 12px;
             padding: 20px;
         }
         .wave-desc { 
-            color: #ecf0f1; font-size: 1.1rem; margin: 10px 0 20px 0; 
-            font-style: italic; opacity: 0.9; max-width: 80%;
+            color: #bdc3c7; font-size: 1.1rem; margin: 10px 0 30px 0; 
+            max-width: 90%; line-height: 1.5;
         }
+        #statusTitle { font-size: 2.5rem; color: var(--accent); margin: 0; text-transform: uppercase; }
 
-        /* --- CONTROLS --- */
         .ui-layer { margin-top: 10px; }
         .btn {
-            padding: 12px 30px; border-radius: 50px; border: none;
+            padding: 15px 30px; border-radius: 50px; border: none;
             font-weight: bold; cursor: pointer; color: white; margin-top: 10px;
-            text-transform: uppercase; font-size: 1rem;
+            text-transform: uppercase; font-size: 1.1rem;
         }
-        .start-btn { background: var(--nest-green); box-shadow: 0 4px 0 #219150; }
-        .pause-btn { background: #95a5a6; width: 100%; padding: 12px; color: #2c3e50;}
+        .start-btn { background: var(--nest-green); box-shadow: 0 4px 0 #219150; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        
+        .pause-btn { background: #95a5a6; width: 100%; padding: 12px; color: #2c3e50; font-size: 1rem;}
 
-        /* --- JOYSTICK BOOST BUTTON --- */
         .joystick-boost-btn {
             position: absolute; bottom: 30px; right: 20px;
             width: 70px; height: 70px; border-radius: 50%;
             background: rgba(231, 76, 60, 0.8); border: 3px solid rgba(255,255,255,0.5);
             color: white; font-weight: bold; font-size: 0.9rem;
-            display: none; 
-            justify-content: center; align-items: center;
+            display: none; justify-content: center; align-items: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.4);
             z-index: 40; cursor: pointer;
         }
         .joystick-boost-btn:active { background: #c0392b; transform: scale(0.95); }
 
-        /* --- MOBILE D-PAD --- */
         .mobile-controls {
             margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.05);
             border-radius: 20px; display: flex; justify-content: center;
@@ -140,7 +135,6 @@
         .d-btn:active { background: var(--accent); color: black; transform: scale(0.95); }
         .center-boost { background: #c0392b; border-radius: 50%; font-size: 1.5rem; border-color: #e74c3c; }
 
-        /* --- SETTINGS MODAL --- */
         .settings-modal {
             display: none; position: fixed; top: 0; left: 0; 
             width: 100%; height: 100%; background: rgba(0,0,0,0.85);
@@ -161,7 +155,6 @@
         .toggle-btn.active { background: var(--accent); color: black; }
         .close-btn { background: var(--accent); color: black; width: 100%; margin-top: 10px; }
 
-        /* --- INFO PANEL --- */
         .info-panel {
             background: var(--ui-dark); padding: 20px; border-radius: 15px;
             border: 1px solid #444; width: 100%; max-width: 450px;
@@ -191,16 +184,11 @@
 
                 <div id="statusOverlay" class="overlay">
                     <h1 id="statusTitle">READY?</h1>
-                    <p id="waveTitle" style="color: #f1c40f; font-size: 1.4rem; margin: 0; font-weight: bold;">Wave 1</p>
+                    <p id="waveTitle" style="color: #f1c40f; font-size: 1.5rem; margin: 10px 0 0 0; font-weight: bold; letter-spacing: 1px;">Wave 1</p>
                     <p id="waveDesc" class="wave-desc">Safe tutorial. Learn to swim and rescue.</p>
                     
                     <p id="finalDeathText" class="death-text"></p>
-                    <button class="btn start-btn" onclick="initAndStart()">▶ START WAVE</button>
-                </div>
-
-                <div id="levelUpOverlay" class="overlay" style="background: rgba(46, 204, 113, 0.95); display: none;">
-                    <h1 style="font-size: 2.5rem; color: white;">WAVE COMPLETE!</h1>
-                    <p style="font-size: 1.2rem; color: white;">Good job, Mama Duck!</p>
+                    <button id="mainActionBtn" class="btn start-btn" onclick="prepareWave(1)">▶ START WAVE</button>
                 </div>
 
                 <div class="hud-grid">
@@ -282,6 +270,7 @@
     </div>
 
     <script>
+        // --- WAVE CONFIG ---
         const WAVE_TEXT = {
             1: "Safe tutorial. Learn to swim and rescue.",
             2: "Learn to dodge the Pike! (Harmless to you, bad for babies).",
@@ -364,29 +353,40 @@
             }
         };
 
-        // --- CORE FUNCTIONS ---
-        function initAndStart() { initAudio(); startGame(); }
-
-        function startGame() {
-            gameState.active = true; gameState.paused = false; gameState.level = 1;
-            gameState.score = 0; gameState.lives = 5; gameState.deadDucklings = 0;
-            gameState.ducksSavedInWave = 0; gameState.boost = 100;
-            ducklings = []; history = [];
-            startWave(1);
-            document.getElementById("statusOverlay").style.display = "none";
-            document.getElementById("finalDeathText").innerText = "";
-            if (loopId) cancelAnimationFrame(loopId);
-            loop();
+        // --- CORE LOGIC ---
+        
+        // 1. Triggered by the main Start Button
+        function prepareWave(lvl) {
+            initAudio(); // Initialize audio context
+            
+            // If Level 1, do a full reset (score, lives, etc)
+            if (lvl === 1) {
+                gameState.score = 0; 
+                gameState.lives = 5; 
+                gameState.deadDucklings = 0;
+            }
+            
+            startWave(lvl);
         }
 
         function startWave(lvl) {
+            gameState.active = true;
+            gameState.paused = false;
             gameState.level = lvl;
             gameState.ducksSavedInWave = 0;
             gameState.targetForWave = 2 + lvl;
+            gameState.boost = 100;
+            
+            // Difficulty Math
             let speedMult = 1 + (lvl * 0.15);
             
-            mama.x = 200; mama.y = 200; history = []; enemies = [];
+            // Reset Entities
+            mama.x = 200; mama.y = 200; 
+            history = []; 
+            ducklings = []; // Clear carry-over babies to prevent instant win bugs
+            enemies = [];
             
+            // Enemy Spawning
             if (lvl >= 2) enemies.push({ type: 'pike', x: -50, y: 100, speed: 2 * speedMult });
             if (lvl >= 3) enemies.push({ type: 'croc', x: 500, y: 300, speed: -1.2 * speedMult });
             if (lvl >= 5) enemies.push({ type: 'croc', x: 500, y: 100, speed: -1.8 * speedMult });
@@ -395,18 +395,36 @@
             spawnBaby();
             updateUI();
             
-            if (lvl > 1) {
-                SoundManager.play('levelup');
-                document.getElementById("levelUpOverlay").style.display = "flex";
-                setTimeout(() => { document.getElementById("levelUpOverlay").style.display = "none"; }, 2000);
-            }
+            // Hide Overlay
+            document.getElementById("statusOverlay").style.display = "none";
+            document.getElementById("finalDeathText").innerText = "";
+            
+            if (loopId) cancelAnimationFrame(loopId);
+            loop();
         }
 
         function checkWaveProgress() {
             if (gameState.ducksSavedInWave >= gameState.targetForWave) {
                 const nextLvl = gameState.level + 1;
-                startWave(nextLvl);
+                showIntermission(nextLvl);
             }
+        }
+
+        function showIntermission(nextLvl) {
+            gameState.active = false; // Stop game loop
+            gameState.paused = true;
+            SoundManager.play('levelup');
+
+            // Show Ready Screen for NEXT level
+            document.getElementById("statusOverlay").style.display = "flex";
+            document.getElementById("statusTitle").innerText = "WAVE COMPLETE!";
+            document.getElementById("waveTitle").innerText = "Next: Wave " + nextLvl;
+            document.getElementById("waveDesc").innerText = WAVE_TEXT[nextLvl] || "Survive the storm!";
+            
+            // Update Button to Start Next Wave
+            const btn = document.getElementById("mainActionBtn");
+            btn.innerText = "▶ START WAVE " + nextLvl;
+            btn.onclick = function() { prepareWave(nextLvl); };
         }
 
         function update() {
@@ -453,17 +471,10 @@
                 if (e.speed > 0 && e.x > 450) { e.x = -50; e.y = 50 + Math.random()*300; }
                 if (e.speed < 0 && e.x < -100) { e.x = 500; e.y = 50 + Math.random()*300; }
                 
-                // MAMA COLLISION CHECK
                 if (Math.hypot(mama.x - e.x, mama.y - e.y) < 30) { 
-                    if (e.type === 'croc') {
-                        // CROC EATS MAMA
-                        SoundManager.play('crunch'); 
-                        loseLife(); 
-                    }
-                    // PIKE DOES NOTHING TO MAMA (ignored)
+                    if (e.type === 'croc') { SoundManager.play('crunch'); loseLife(); }
                 }
 
-                // DUCKLING COLLISION CHECK (Both Croc and Pike affect babies)
                 for (let i = 0; i < ducklings.length; i++) {
                     let idx = (i+1)*14;
                     if (history[idx]) {
@@ -473,7 +484,6 @@
                                 gameState.deadDucklings += (ducklings.length - i);
                                 ducklings.splice(i); updateUI(); break;
                             } else {
-                                // Pike just scares/removes them
                                 ducklings.splice(i); break;
                             }
                         }
@@ -551,13 +561,16 @@
         function gameOver() {
             gameState.active = false; gameState.paused = true;
             if (gameState.score > gameState.highScore) localStorage.setItem("duckRescueHighScore", gameState.score);
+            
             document.getElementById("statusOverlay").style.display = "flex";
             document.getElementById("statusTitle").innerText = "GAME OVER";
-            document.getElementById("waveTitle").innerText = "Reached Wave " + gameState.level;
-            document.getElementById("waveDesc").innerText = "";
+            document.getElementById("waveTitle").innerText = "";
+            document.getElementById("waveDesc").innerText = "You reached Wave " + gameState.level;
             document.getElementById("finalDeathText").innerText = "Casualties: " + gameState.deadDucklings;
-            const btn = document.querySelector(".start-btn");
-            btn.innerText = "▶ RESTART"; btn.onclick = initAndStart;
+            
+            const btn = document.getElementById("mainActionBtn");
+            btn.innerText = "▶ RESTART"; 
+            btn.onclick = function() { prepareWave(1); };
         }
 
         function togglePause() {
@@ -565,13 +578,15 @@
             gameState.paused = !gameState.paused;
             const overlay = document.getElementById("statusOverlay");
             overlay.style.display = gameState.paused ? "flex" : "none";
+            
             if(gameState.paused) {
                 document.getElementById("statusTitle").innerText = "PAUSED";
                 document.getElementById("waveTitle").innerText = "Wave " + gameState.level;
-                document.getElementById("waveDesc").innerText = WAVE_TEXT[gameState.level] || "";
+                document.getElementById("waveDesc").innerText = "";
                 document.getElementById("finalDeathText").innerText = "";
-                const btn = document.querySelector(".start-btn");
-                btn.innerText = "RESUME"; btn.onclick = togglePause;
+                const btn = document.getElementById("mainActionBtn");
+                btn.innerText = "RESUME"; 
+                btn.onclick = togglePause;
             } else loop();
         }
 
