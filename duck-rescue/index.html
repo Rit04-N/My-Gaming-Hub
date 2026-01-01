@@ -42,31 +42,24 @@
             border-radius: 15px; border: 3px solid white;
             text-align: center; position: relative;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            /* Ensure container clips boost bar but allows top-bar to float if needed */
             overflow: hidden; 
         }
 
-        /* --- TOP BAR (Settings Icon) --- */
+        /* --- TOP BAR --- */
         .top-bar {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 60; /* CRITICAL: Higher than overlay (50) so it's clickable */
+            margin-bottom: 10px; position: relative; z-index: 60;
         }
-
         .game-title { 
             color: var(--accent); margin: 0; 
             text-shadow: 2px 2px 0 #000; font-size: 1.5rem; 
         }
-        
         .icon-btn {
             background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); 
             border-radius: 50%; width: 40px; height: 40px;
             font-size: 1.5rem; cursor: pointer; color: white;
             display: flex; justify-content: center; align-items: center;
-            transition: transform 0.2s;
         }
-        .icon-btn:active { transform: scale(0.9); background: var(--accent); color: black; }
 
         /* --- HUD --- */
         .hud-grid {
@@ -78,10 +71,7 @@
             border-radius: 8px; font-weight: bold; font-size: 0.9rem;
         }
         .target-box { border: 1px solid var(--accent); color: var(--accent); }
-        .score-box { color: white; }
-
         .sub-header { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;}
-        .lives-box { letter-spacing: 2px; }
         .death-box span { color: #ecf0f1; font-weight: bold; }
 
         /* --- CANVAS --- */
@@ -104,8 +94,12 @@
             background: rgba(15, 15, 20, 0.96); z-index: 50;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             border-radius: 12px;
+            padding: 20px;
         }
-        .death-text { color: var(--danger); font-weight: bold; margin-top: 10px; min-height: 20px;}
+        .wave-desc { 
+            color: #ecf0f1; font-size: 1.1rem; margin: 10px 0 20px 0; 
+            font-style: italic; opacity: 0.9; max-width: 80%;
+        }
 
         /* --- CONTROLS --- */
         .ui-layer { margin-top: 10px; }
@@ -115,19 +109,20 @@
             text-transform: uppercase; font-size: 1rem;
         }
         .start-btn { background: var(--nest-green); box-shadow: 0 4px 0 #219150; }
-        .start-btn:active { transform: translateY(4px); box-shadow: none; }
         .pause-btn { background: #95a5a6; width: 100%; padding: 12px; color: #2c3e50;}
 
-        /* --- INFO PANEL (Instructions) --- */
-        .info-panel {
-            background: var(--ui-dark); padding: 20px; border-radius: 15px;
-            border: 1px solid #444; width: 100%; max-width: 450px;
-            /* Visible on Mobile by default now (stacked) */
-            display: block; 
+        /* --- JOYSTICK BOOST BUTTON (Bottom Right) --- */
+        .joystick-boost-btn {
+            position: absolute; bottom: 30px; right: 20px;
+            width: 70px; height: 70px; border-radius: 50%;
+            background: rgba(231, 76, 60, 0.8); border: 3px solid rgba(255,255,255,0.5);
+            color: white; font-weight: bold; font-size: 0.9rem;
+            display: none; /* Hidden by default, shown by JS */
+            justify-content: center; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            z-index: 40; cursor: pointer;
         }
-        .info-panel h3 { margin-top: 0; color: var(--accent); border-bottom: 1px solid #444; padding-bottom: 10px; }
-        .info-panel p { font-size: 0.95rem; line-height: 1.5; color: #bdc3c7; }
-        .back-link { color: var(--accent); text-decoration: none; margin-top: 15px; display: block; font-weight: bold; }
+        .joystick-boost-btn:active { background: #c0392b; transform: scale(0.95); }
 
         /* --- MOBILE D-PAD --- */
         .mobile-controls {
@@ -155,24 +150,32 @@
         .settings-content {
             background: #2c3e50; padding: 25px; border-radius: 20px;
             border: 2px solid var(--accent); width: 90%; max-width: 350px;
-            text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.7);
+            text-align: center;
         }
         .setting-row { margin: 20px 0; display: flex; flex-direction: column; gap: 8px; align-items: center; }
         .toggle-group { display: flex; gap: 10px; background: #1a252f; padding: 5px; border-radius: 25px; }
         .toggle-btn {
             padding: 10px 20px; border: none; background: transparent; color: #7f8c8d;
-            cursor: pointer; font-weight: bold; border-radius: 20px; transition: all 0.2s;
+            cursor: pointer; font-weight: bold; border-radius: 20px;
         }
-        .toggle-btn.active { background: var(--accent); color: black; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .toggle-btn.active { background: var(--accent); color: black; }
         .close-btn { background: var(--accent); color: black; width: 100%; margin-top: 10px; }
 
-        /* --- DESKTOP LAYOUT --- */
+        /* --- INFO PANEL --- */
+        .info-panel {
+            background: var(--ui-dark); padding: 20px; border-radius: 15px;
+            border: 1px solid #444; width: 100%; max-width: 450px;
+            display: block; 
+        }
+        .info-panel h3 { margin-top: 0; color: var(--accent); border-bottom: 1px solid #444; padding-bottom: 10px; }
+        .info-panel p { font-size: 0.95rem; line-height: 1.5; color: #bdc3c7; }
+        .back-link { color: var(--accent); text-decoration: none; margin-top: 15px; display: block; font-weight: bold; }
+
         @media (min-width: 900px) {
             .main-wrapper { flex-direction: row; align-items: flex-start; justify-content: center; }
-            .info-panel { 
-                position: sticky; top: 20px; width: 300px; margin-top: 0; 
-            }
-            .mobile-controls { display: none !important; } /* Hide D-Pad on PC */
+            .info-panel { position: sticky; top: 20px; width: 300px; margin-top: 0; }
+            .mobile-controls { display: none !important; }
+            .joystick-boost-btn { display: none !important; }
         }
     </style>
 </head>
@@ -188,15 +191,16 @@
 
                 <div id="statusOverlay" class="overlay">
                     <h1 id="statusTitle">READY?</h1>
-                    <p id="waveInfo" style="color: #f1c40f; font-size: 1.2rem; margin-bottom: 10px;">Wave 1: Rescue 3 Ducks</p>
-                    <p id="highScoreText">High Score: 0</p>
+                    <p id="waveTitle" style="color: #f1c40f; font-size: 1.4rem; margin: 0; font-weight: bold;">Wave 1</p>
+                    <p id="waveDesc" class="wave-desc">Safe tutorial. Learn to swim and rescue.</p>
+                    
                     <p id="finalDeathText" class="death-text"></p>
-                    <button class="btn start-btn" onclick="initAndStart()">▶ START WAVE 1</button>
+                    <button class="btn start-btn" onclick="initAndStart()">▶ START WAVE</button>
                 </div>
 
                 <div id="levelUpOverlay" class="overlay" style="background: rgba(46, 204, 113, 0.95); display: none;">
-                    <h1 style="font-size: 2.5rem; color: white; text-shadow: 0 2px 0 black;">WAVE COMPLETE!</h1>
-                    <p style="font-size: 1.2rem; color: white;">Get ready for harder waters...</p>
+                    <h1 style="font-size: 2.5rem; color: white;">WAVE COMPLETE!</h1>
+                    <p style="font-size: 1.2rem; color: white;">Good job, Mama Duck!</p>
                 </div>
 
                 <div class="hud-grid">
@@ -214,7 +218,10 @@
                     <div id="boostBar"></div>
                 </div>
 
-                <canvas id="gameCanvas"></canvas>
+                <div style="position: relative;">
+                    <canvas id="gameCanvas"></canvas>
+                    <button id="joyBoostBtn" class="joystick-boost-btn">🚀<br>BOOST</button>
+                </div>
 
                 <div class="ui-layer">
                     <button class="btn pause-btn" onclick="togglePause()">PAUSE GAME</button>
@@ -234,9 +241,10 @@
                     </div>
 
                     <div class="setting-row" id="sensitivityRow">
-                        <label>Joystick Sensitivity:</label>
+                        <label>Joystick Responsiveness:</label>
                         <input type="range" id="sensSlider" min="10" max="60" value="30" oninput="updateSens(this.value)">
                         <span id="sensValue" style="color: var(--accent); font-weight: bold;">30</span>
+                        <p style="font-size: 0.8rem; opacity: 0.7; margin:0;">(High = Quick Turns)</p>
                     </div>
 
                     <div class="setting-row">
@@ -250,43 +258,46 @@
 
             <div id="dpadContainer" class="mobile-controls" style="display: none;">
                 <div class="d-pad-grid">
-                    <button class="d-btn" data-key="UL" style="font-size: 0.9rem;">◤</button>
+                    <button class="d-btn" data-key="UL">◤</button>
                     <button class="d-btn" data-key="UP">▲</button>
-                    <button class="d-btn" data-key="UR" style="font-size: 0.9rem;">◥</button>
+                    <button class="d-btn" data-key="UR">◥</button>
                     <button class="d-btn" data-key="LEFT">◀</button>
                     <button class="d-btn center-boost" data-key="BOOST">🚀</button>
                     <button class="d-btn" data-key="RIGHT">▶</button>
-                    <button class="d-btn" data-key="DL" style="font-size: 0.9rem;">◣</button>
+                    <button class="d-btn" data-key="DL">◣</button>
                     <button class="d-btn" data-key="DOWN">▼</button>
-                    <button class="d-btn" data-key="DR" style="font-size: 0.9rem;">◢</button>
+                    <button class="d-btn" data-key="DR">◢</button>
                 </div>
             </div>
         </div>
 
         <div class="info-panel">
             <h3>MISSION BRIEFING</h3>
-            <p><strong>The Storm is Coming!</strong><br>Rescue the required number of ducklings to escape each wave. The waters get more dangerous!</p>
+            <p><strong>The Storm is Coming!</strong><br>Rescue ducklings to escape. Watch the Wave descriptions!</p>
             <hr style="border-color: #444;">
-            <p>🐊 <strong>Crocodile:</strong><br>Avoid him! If he touches the baby line, he eats everyone behind that point!</p>
-            <p>🐟 <strong>Pike:</strong><br>Scares babies away (they get lost).</p>
-            <hr style="border-color: #444;">
-            <div class="key-guide">
-                <p><strong>PC:</strong> Arrows or WASD + SPACE to Boost</p>
-                <p><strong>Mobile:</strong> Use Settings ⚙️ to switch between Joystick and D-Pad.</p>
-            </div>
+            <p>🐊 <strong>Crocodile:</strong> Cuts the line! Lose everyone behind the cut.</p>
+            <p>🐟 <strong>Pike:</strong> Scares babies away.</p>
             <a href="../index.html" class="back-link">← Back to Gaming Hub</a>
         </div>
     </div>
 
     <script>
-        // --- CONFIG & STATE ---
+        // --- WAVE DESCRIPTIONS ---
+        const WAVE_TEXT = {
+            1: "Safe tutorial. Learn to swim and rescue.",
+            2: "Learn to dodge the Pike! (It scares babies).",
+            3: "High stakes introduced! (Avoid the Croc).",
+            4: "More ducklings to find...",
+            5: "Reflex testing! (Two Crocodiles).",
+            6: "The waters are getting crowded...",
+            7: "Chaos Mode: Multiple Pikes!",
+            8: "Can you survive the Storm?"
+        };
+
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        // Fix for crisp rendering on mobile
-        canvas.width = 400; 
-        canvas.height = 400;
+        canvas.width = 400; canvas.height = 400;
 
-        // Safe Settings Loading
         const getStoredSetting = (key, def) => {
             const val = localStorage.getItem(key);
             return val ? val : def;
@@ -294,124 +305,80 @@
 
         const SETTINGS = {
             controlType: getStoredSetting('duckControl', 'joystick'),
+            // "Sensitivity" here basically means "Radius required to hit max speed"
+            // So Lower Number = Higher Sensitivity (less movement needed)
+            // But we display it as 10-60 to user. We handle logic in update().
             sensitivity: parseInt(getStoredSetting('duckSens', '30')) || 30,
             soundOn: true
         };
 
         let gameState = {
-            active: false,
-            paused: true,
-            level: 1,
-            score: 0,
+            active: false, paused: true, level: 1, score: 0,
             highScore: parseInt(getStoredSetting("duckRescueHighScore", '0')) || 0,
-            lives: 5,
-            deadDucklings: 0,
-            ducksSavedInWave: 0,
-            targetForWave: 3,
-            boost: 100
+            lives: 5, deadDucklings: 0, ducksSavedInWave: 0, targetForWave: 3, boost: 100
         };
 
-        // Entities
         let mama = { x: 200, y: 200, baseSpeed: 3, boostSpeed: 7 };
-        let ducklings = [];
-        let history = []; 
-        let lostDuckling = { x: 100, y: 100 };
-        let nest = { x: 340, y: 60, size: 40 };
-        let enemies = []; 
+        let ducklings = []; let history = []; let enemies = [];
+        let lostDuckling = { x: 100, y: 100 }; let nest = { x: 340, y: 60, size: 40 };
 
-        // Inputs
         let keys = {};
-        let joystick = { active: false, baseX: 0, baseY: 0, stickX: 0, stickY: 0, radius: 40, dx: 0, dy: 0, lastTap: 0 };
+        let joystick = { active: false, baseX: 0, baseY: 0, stickX: 0, stickY: 0, radius: 40, dx: 0, dy: 0 };
         let isBoosting = false;
         let loopId;
 
-        // --- AUDIO SYSTEM (Lazy Load) ---
+        // --- AUDIO ---
         let audioCtx;
-        
         function initAudio() {
             if (!audioCtx) {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (AudioContext) {
-                    audioCtx = new AudioContext();
-                }
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (AC) audioCtx = new AC();
             }
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
         }
 
         const SoundManager = {
             play: (type) => {
-                if(!SETTINGS.soundOn || !audioCtx) return;
-                
-                // Double check state
-                if(audioCtx.state === 'suspended') audioCtx.resume();
-
+                if(!SETTINGS.soundOn || !audioCtx || audioCtx.state === 'suspended') return;
                 try {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
+                    osc.connect(gain); gain.connect(audioCtx.destination);
                     const now = audioCtx.currentTime;
 
-                    if (type === 'collect') { // High Chirp
-                        osc.type = 'sine';
+                    if (type === 'collect') {
                         osc.frequency.setValueAtTime(600, now);
-                        osc.frequency.exponentialRampToValueAtTime(900, now + 0.1);
-                        gain.gain.setValueAtTime(0.1, now);
-                        gain.gain.linearRampToValueAtTime(0, now + 0.1);
-                        osc.start(now); osc.stop(now + 0.1);
-                    } else if (type === 'deposit') { // Fanfare
-                        osc.type = 'triangle';
-                        osc.frequency.setValueAtTime(400, now);
-                        osc.frequency.setValueAtTime(500, now + 0.1);
-                        osc.frequency.setValueAtTime(600, now + 0.2);
-                        gain.gain.setValueAtTime(0.1, now);
-                        gain.gain.linearRampToValueAtTime(0, now + 0.4);
-                        osc.start(now); osc.stop(now + 0.4);
-                    } else if (type === 'crunch') { // Low Noise
+                        osc.frequency.exponentialRampToValueAtTime(900, now+0.1);
+                        gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now+0.1);
+                        osc.start(now); osc.stop(now+0.1);
+                    } else if (type === 'crunch') {
                         osc.type = 'sawtooth';
                         osc.frequency.setValueAtTime(150, now);
-                        osc.frequency.linearRampToValueAtTime(50, now + 0.2);
-                        gain.gain.setValueAtTime(0.2, now);
-                        gain.gain.linearRampToValueAtTime(0, now + 0.2);
-                        osc.start(now); osc.stop(now + 0.2);
-                    } else if (type === 'levelup') { // Success
+                        osc.frequency.linearRampToValueAtTime(50, now+0.2);
+                        gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0, now+0.2);
+                        osc.start(now); osc.stop(now+0.2);
+                    } else if (type === 'levelup') {
                         osc.type = 'square';
                         osc.frequency.setValueAtTime(440, now);
-                        osc.frequency.setValueAtTime(880, now + 0.2);
-                        gain.gain.setValueAtTime(0.05, now);
-                        gain.gain.linearRampToValueAtTime(0, now + 0.6);
-                        osc.start(now); osc.stop(now + 0.6);
+                        osc.frequency.setValueAtTime(880, now+0.2);
+                        gain.gain.setValueAtTime(0.05, now); gain.gain.linearRampToValueAtTime(0, now+0.6);
+                        osc.start(now); osc.stop(now+0.6);
                     }
-                } catch(e) { console.error("Audio Error", e); }
+                } catch(e){}
             }
         };
 
-        // --- GAME LOGIC ---
-
-        function initAndStart() {
-            initAudio(); // Initialize audio context on click
-            startGame();
-        }
+        // --- CORE FUNCTIONS ---
+        function initAndStart() { initAudio(); startGame(); }
 
         function startGame() {
-            gameState.active = true;
-            gameState.paused = false;
-            gameState.level = 1;
-            gameState.score = 0;
-            gameState.lives = 5;
-            gameState.deadDucklings = 0;
-            gameState.ducksSavedInWave = 0;
-            gameState.boost = 100;
-            ducklings = [];
-            history = [];
-            
+            gameState.active = true; gameState.paused = false; gameState.level = 1;
+            gameState.score = 0; gameState.lives = 5; gameState.deadDucklings = 0;
+            gameState.ducksSavedInWave = 0; gameState.boost = 100;
+            ducklings = []; history = [];
             startWave(1);
-            
             document.getElementById("statusOverlay").style.display = "none";
             document.getElementById("finalDeathText").innerText = "";
-            
             if (loopId) cancelAnimationFrame(loopId);
             loop();
         }
@@ -419,17 +386,11 @@
         function startWave(lvl) {
             gameState.level = lvl;
             gameState.ducksSavedInWave = 0;
-            gameState.targetForWave = 2 + lvl; 
-            
-            // Speed Multiplier
+            gameState.targetForWave = 2 + lvl;
             let speedMult = 1 + (lvl * 0.15);
             
-            // Reset Positions
-            mama.x = 200; mama.y = 200;
-            history = []; // Clear history to prevent snag
-            enemies = [];
+            mama.x = 200; mama.y = 200; history = []; enemies = [];
             
-            // Enemy Spawning Logic
             if (lvl >= 2) enemies.push({ type: 'pike', x: -50, y: 100, speed: 2 * speedMult });
             if (lvl >= 3) enemies.push({ type: 'croc', x: 500, y: 300, speed: -1.2 * speedMult });
             if (lvl >= 5) enemies.push({ type: 'croc', x: 500, y: 100, speed: -1.8 * speedMult });
@@ -438,26 +399,29 @@
             spawnBaby();
             updateUI();
             
-            const overlay = document.getElementById("levelUpOverlay");
+            // Show Overlay for new Wave Info only if resuming or start (handled by UI mostly)
             if (lvl > 1) {
                 SoundManager.play('levelup');
-                overlay.style.display = "flex";
-                setTimeout(() => { overlay.style.display = "none"; }, 2000);
+                document.getElementById("levelUpOverlay").style.display = "flex";
+                setTimeout(() => { document.getElementById("levelUpOverlay").style.display = "none"; }, 2000);
             }
         }
 
         function checkWaveProgress() {
             if (gameState.ducksSavedInWave >= gameState.targetForWave) {
-                startWave(gameState.level + 1);
+                // Prepare Text for NEXT wave
+                const nextLvl = gameState.level + 1;
+                const txt = WAVE_TEXT[nextLvl] || "Survive the storm!";
+                
+                // We don't show the pause screen, we just show the green Level Up flash
+                startWave(nextLvl);
             }
         }
 
         function update() {
             if (gameState.paused || !gameState.active) return;
 
-            // --- MOVEMENT ---
             let mx = 0, my = 0;
-
             if (keys["ArrowUp"] || keys["KeyW"]) my = -1;
             if (keys["ArrowDown"] || keys["KeyS"]) my = 1;
             if (keys["ArrowLeft"] || keys["KeyA"]) mx = -1;
@@ -468,18 +432,18 @@
                 my = joystick.dy;
             }
 
-            // Boost
+            // BOOST LOGIC
+            // Joystick button OR Space bar
             let currentSpeed = mama.baseSpeed;
             if (isBoosting && gameState.boost > 0) {
                 currentSpeed = mama.boostSpeed;
                 gameState.boost -= 1.5;
             } else {
-                if (!keys["Space"] && !joystick.active) isBoosting = false; // Auto release
+                if (!keys["Space"] && !joystick.boostHeld) isBoosting = false; 
                 if (gameState.boost < 100) gameState.boost += 0.5;
             }
             document.getElementById("boostBar").style.width = gameState.boost + "%";
 
-            // Apply Move
             if (mx !== 0 || my !== 0) {
                 if (!joystick.active) { // Normalize keyboard
                     let len = Math.sqrt(mx*mx + my*my);
@@ -489,171 +453,113 @@
                 mama.y += my * currentSpeed;
             }
 
-            // Boundaries
             mama.x = Math.max(20, Math.min(380, mama.x));
             mama.y = Math.max(20, Math.min(380, mama.y));
 
-            // Snake Trail History
             history.unshift({x: mama.x, y: mama.y});
             if (history.length > 300) history.pop();
 
-            // --- COLLISIONS ---
+            // Enemies
             enemies.forEach(e => {
                 e.x += e.speed;
                 if (e.speed > 0 && e.x > 450) { e.x = -50; e.y = 50 + Math.random()*300; }
                 if (e.speed < 0 && e.x < -100) { e.x = 500; e.y = 50 + Math.random()*300; }
                 
-                // Vs Mama
-                if (Math.hypot(mama.x - e.x, mama.y - e.y) < 30) {
-                    SoundManager.play('crunch');
-                    loseLife(); 
-                }
+                if (Math.hypot(mama.x - e.x, mama.y - e.y) < 30) { SoundManager.play('crunch'); loseLife(); }
 
-                // Vs Babies
                 for (let i = 0; i < ducklings.length; i++) {
-                    let idx = (i+1)*14; // spacing
+                    let idx = (i+1)*14;
                     if (history[idx]) {
-                        let dist = Math.hypot(history[idx].x - e.x, history[idx].y - e.y);
-                        if (dist < 25) {
+                        if (Math.hypot(history[idx].x - e.x, history[idx].y - e.y) < 25) {
                             if (e.type === 'croc') {
                                 SoundManager.play('crunch');
-                                let lost = ducklings.length - i;
-                                gameState.deadDucklings += lost;
-                                ducklings.splice(i);
-                                updateUI();
-                                break;
-                            } else if (e.type === 'pike') {
-                                ducklings.splice(i); // Just scare
-                                break;
+                                gameState.deadDucklings += (ducklings.length - i);
+                                ducklings.splice(i); updateUI(); break;
+                            } else {
+                                ducklings.splice(i); break;
                             }
                         }
                     }
                 }
             });
 
-            // Rescue
             if (Math.hypot(mama.x - lostDuckling.x, mama.y - lostDuckling.y) < 30) {
-                SoundManager.play('collect');
-                ducklings.push({});
-                spawnBaby();
+                SoundManager.play('collect'); ducklings.push({}); spawnBaby();
             }
-
-            // Deposit
             if (Math.hypot(mama.x - nest.x, mama.y - nest.y) < nest.size && ducklings.length > 0) {
-                SoundManager.play('deposit');
-                let count = ducklings.length;
-                gameState.score += count;
-                gameState.ducksSavedInWave += count;
-                ducklings = [];
-                updateUI();
-                checkWaveProgress();
+                gameState.score += ducklings.length;
+                gameState.ducksSavedInWave += ducklings.length;
+                ducklings = []; updateUI(); checkWaveProgress();
             }
         }
 
         function draw() {
             ctx.clearRect(0, 0, 400, 400);
-
-            // Labels
-            ctx.shadowColor = "rgba(0,0,0,0.5)"; ctx.shadowBlur = 4;
             ctx.textAlign = "center"; ctx.textBaseline = "middle";
-
             ctx.font = "45px serif"; ctx.fillText("🪺", nest.x, nest.y); 
 
             enemies.forEach(e => {
                 ctx.font = (e.type === 'croc' ? "45px" : "30px") + " serif";
-                ctx.save();
-                ctx.translate(e.x, e.y);
-                if (e.speed > 0) ctx.scale(-1, 1); // Flip if moving right
-                ctx.fillText(e.type === 'croc' ? "🐊" : "🐟", 0, 0);
-                ctx.restore();
+                ctx.save(); ctx.translate(e.x, e.y);
+                if (e.speed > 0) ctx.scale(-1, 1);
+                ctx.fillText(e.type === 'croc' ? "🐊" : "🐟", 0, 0); ctx.restore();
             });
 
-            // Mama
-            ctx.save();
-            ctx.translate(mama.x, mama.y);
+            ctx.save(); ctx.translate(mama.x, mama.y);
             if (keys["ArrowLeft"] || keys["KeyA"] || (joystick.active && joystick.dx < 0)) ctx.scale(-1, 1);
             if (isBoosting) { ctx.shadowColor = "white"; ctx.shadowBlur = 15; }
-            ctx.font = "40px serif"; ctx.fillText("🦢", 0, 0);
-            ctx.restore();
-
+            ctx.font = "40px serif"; ctx.fillText("🦢", 0, 0); ctx.restore();
             ctx.shadowBlur = 0;
 
-            // Babies
             ducklings.forEach((d, i) => {
-                let idx = (i + 1) * 14;
+                let idx = (i+1)*14;
                 if (history[idx]) {
                     let bob = Math.sin(Date.now() * 0.01 + i) * 3;
-                    ctx.font = "20px serif";
-                    ctx.fillText("🐥", history[idx].x, history[idx].y + bob);
+                    ctx.font = "20px serif"; ctx.fillText("🐥", history[idx].x, history[idx].y + bob);
                 }
             });
-
             ctx.font = "24px serif"; ctx.fillText("🐣", lostDuckling.x, lostDuckling.y);
 
-            // Joystick Overlay
             if (SETTINGS.controlType === 'joystick' && joystick.active) {
-                ctx.beginPath();
-                ctx.arc(joystick.baseX, joystick.baseY, joystick.radius, 0, Math.PI*2);
-                ctx.fillStyle = "rgba(255, 255, 255, 0.1)"; ctx.fill();
-                ctx.strokeStyle = "rgba(255, 255, 255, 0.3)"; ctx.stroke();
-                
-                ctx.beginPath();
-                ctx.arc(joystick.stickX, joystick.stickY, 15, 0, Math.PI*2);
+                ctx.beginPath(); ctx.arc(joystick.baseX, joystick.baseY, joystick.radius, 0, Math.PI*2);
+                ctx.fillStyle = "rgba(255, 255, 255, 0.1)"; ctx.fill(); ctx.strokeStyle = "rgba(255,255,255,0.3)"; ctx.stroke();
+                ctx.beginPath(); ctx.arc(joystick.stickX, joystick.stickY, 15, 0, Math.PI*2);
                 ctx.fillStyle = "rgba(241, 196, 15, 0.8)"; ctx.fill();
             }
         }
 
-        function loop() {
-            update();
-            draw();
-            loopId = requestAnimationFrame(loop);
-        }
-
-        // --- HELPERS ---
-        function spawnBaby() {
-            lostDuckling.x = 40 + Math.random() * 320;
-            lostDuckling.y = 40 + Math.random() * 320;
-        }
-
+        function loop() { update(); draw(); loopId = requestAnimationFrame(loop); }
+        function spawnBaby() { lostDuckling.x = 40+Math.random()*320; lostDuckling.y = 40+Math.random()*320; }
+        
         function updateUI() {
             document.getElementById("scoreDisplay").innerText = gameState.score;
             document.getElementById("deathDisplay").innerText = gameState.deadDucklings;
             document.getElementById("levelDisplay").innerText = gameState.level;
             document.getElementById("savedDisplay").innerText = gameState.ducksSavedInWave;
             document.getElementById("targetDisplay").innerText = gameState.targetForWave;
-            
             let h = ""; for(let i=0; i<gameState.lives; i++) h += "❤";
             document.getElementById("livesDisplay").innerText = h;
         }
 
         function loseLife() {
-            gameState.lives--;
-            updateUI();
-            if (gameState.lives <= 0) {
-                gameOver();
-            } else {
-                mama.x = 200; mama.y = 200;
-                history = [];
-                enemies.forEach(e => {
-                     if(e.speed > 0) e.x = -50; else e.x = 500;
-                });
+            gameState.lives--; updateUI();
+            if (gameState.lives <= 0) gameOver();
+            else {
+                mama.x = 200; mama.y = 200; history = [];
+                enemies.forEach(e => { if(e.speed > 0) e.x = -50; else e.x = 500; });
             }
         }
 
         function gameOver() {
-            gameState.active = false;
-            gameState.paused = true;
-            if (gameState.score > gameState.highScore) {
-                localStorage.setItem("duckRescueHighScore", gameState.score);
-            }
-            
+            gameState.active = false; gameState.paused = true;
+            if (gameState.score > gameState.highScore) localStorage.setItem("duckRescueHighScore", gameState.score);
             document.getElementById("statusOverlay").style.display = "flex";
             document.getElementById("statusTitle").innerText = "GAME OVER";
-            document.getElementById("waveInfo").innerText = "Reached Wave " + gameState.level;
+            document.getElementById("waveTitle").innerText = "Reached Wave " + gameState.level;
+            document.getElementById("waveDesc").innerText = "";
             document.getElementById("finalDeathText").innerText = "Casualties: " + gameState.deadDucklings;
-            document.querySelector(".start-btn").innerText = "▶ RESTART";
-            // Ensure Start button calls initAndStart again
-            document.querySelector(".start-btn").onclick = initAndStart;
+            const btn = document.querySelector(".start-btn");
+            btn.innerText = "▶ RESTART"; btn.onclick = initAndStart;
         }
 
         function togglePause() {
@@ -661,42 +567,24 @@
             gameState.paused = !gameState.paused;
             const overlay = document.getElementById("statusOverlay");
             overlay.style.display = gameState.paused ? "flex" : "none";
-            
             if(gameState.paused) {
                 document.getElementById("statusTitle").innerText = "PAUSED";
-                document.getElementById("waveInfo").innerText = ""; 
+                document.getElementById("waveTitle").innerText = "Wave " + gameState.level;
+                // Show current wave objective in pause
+                document.getElementById("waveDesc").innerText = WAVE_TEXT[gameState.level] || "";
                 document.getElementById("finalDeathText").innerText = "";
                 const btn = document.querySelector(".start-btn");
-                btn.innerText = "RESUME";
-                btn.onclick = togglePause;
-            } else {
-                loop();
-            }
+                btn.innerText = "RESUME"; btn.onclick = togglePause;
+            } else loop();
         }
 
-        // --- SETTINGS UI ---
-        function openSettings() {
-            if (gameState.active && !gameState.paused) togglePause();
-            document.getElementById("settingsModal").style.display = "flex";
-            applySettings(); // sync UI
-        }
-        function closeSettings() {
-            document.getElementById("settingsModal").style.display = "none";
-        }
-        function setControlType(type) {
-            SETTINGS.controlType = type;
-            localStorage.setItem('duckControl', type);
-            applySettings();
-        }
-        function updateSens(val) {
-            SETTINGS.sensitivity = parseInt(val);
-            document.getElementById("sensValue").innerText = val;
-            localStorage.setItem('duckSens', val);
-        }
-        function toggleSound() {
-            SETTINGS.soundOn = !SETTINGS.soundOn;
-            applySettings();
-        }
+        // --- SETTINGS & INPUTS ---
+        function openSettings() { if(gameState.active && !gameState.paused) togglePause(); document.getElementById("settingsModal").style.display = "flex"; applySettings(); }
+        function closeSettings() { document.getElementById("settingsModal").style.display = "none"; }
+        function setControlType(type) { SETTINGS.controlType = type; localStorage.setItem('duckControl', type); applySettings(); }
+        function updateSens(val) { SETTINGS.sensitivity = parseInt(val); document.getElementById("sensValue").innerText = val; localStorage.setItem('duckSens', val); }
+        function toggleSound() { SETTINGS.soundOn = !SETTINGS.soundOn; applySettings(); }
+        
         function applySettings() {
             document.getElementById("btnJoystick").classList.toggle('active', SETTINGS.controlType === 'joystick');
             document.getElementById("btnDpad").classList.toggle('active', SETTINGS.controlType === 'dpad');
@@ -705,34 +593,27 @@
             document.getElementById("btnSound").classList.toggle('active', SETTINGS.soundOn);
             document.getElementById("btnSound").innerText = SETTINGS.soundOn ? "ON" : "OFF";
             document.getElementById("dpadContainer").style.display = SETTINGS.controlType === 'dpad' ? 'flex' : 'none';
+            // Show/Hide Joystick Boost Button
+            document.getElementById("joyBoostBtn").style.display = (SETTINGS.controlType === 'joystick' && gameState.active) ? 'flex' : 'none';
         }
 
-        // --- INPUTS ---
         window.addEventListener("keydown", (e) => {
             if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].includes(e.code)) e.preventDefault();
-            keys[e.code] = true;
-            if(e.code === "Space") isBoosting = true;
+            keys[e.code] = true; if(e.code === "Space") isBoosting = true;
         });
-        window.addEventListener("keyup", (e) => {
-            keys[e.code] = false;
-            if(e.code === "Space") isBoosting = false;
-        });
+        window.addEventListener("keyup", (e) => { keys[e.code] = false; if(e.code === "Space") isBoosting = false; });
 
-        // Joystick
+        // JOYSTICK
         canvas.addEventListener("touchstart", (e) => {
             if (SETTINGS.controlType !== 'joystick' || !gameState.active || gameState.paused) return;
             e.preventDefault();
             const rect = canvas.getBoundingClientRect();
             const touch = e.touches[0];
-            
             joystick.active = true;
             joystick.baseX = (touch.clientX - rect.left) * (canvas.width / rect.width);
             joystick.baseY = (touch.clientY - rect.top) * (canvas.height / rect.height);
             joystick.stickX = joystick.baseX; joystick.stickY = joystick.baseY;
-            
-            const now = Date.now();
-            if(now - joystick.lastTap < 300) isBoosting = true;
-            joystick.lastTap = now;
+            document.getElementById("joyBoostBtn").style.display = 'flex';
         }, {passive: false});
 
         canvas.addEventListener("touchmove", (e) => {
@@ -742,25 +623,33 @@
             const touch = e.touches[0];
             const tx = (touch.clientX - rect.left) * (canvas.width / rect.width);
             const ty = (touch.clientY - rect.top) * (canvas.height / rect.height);
-
             const dist = Math.hypot(tx - joystick.baseX, ty - joystick.baseY);
             const angle = Math.atan2(ty - joystick.baseY, tx - joystick.baseX);
             const limit = Math.min(dist, joystick.radius);
-
             joystick.stickX = joystick.baseX + Math.cos(angle) * limit;
             joystick.stickY = joystick.baseY + Math.sin(angle) * limit;
 
-            const force = Math.min(dist / SETTINGS.sensitivity, 1);
+            // SENSITIVITY MATH:
+            // High slider value (60) = small denominator = High Sensitivity (reaches 1.0 force quickly)
+            // Low slider value (10) = large denominator = Low Sensitivity
+            // We use (70 - value) to flip logic for math, but keep UI intuitive (High = Fast)
+            const sensFactor = 70 - SETTINGS.sensitivity; 
+            const force = Math.min(dist / sensFactor, 1);
+            
             joystick.dx = Math.cos(angle) * force;
             joystick.dy = Math.sin(angle) * force;
         }, {passive: false});
 
         canvas.addEventListener("touchend", () => {
-            joystick.active = false; isBoosting = false;
-            joystick.dx = 0; joystick.dy = 0;
+            joystick.active = false; joystick.dx = 0; joystick.dy = 0;
         });
 
-        // D-Pad
+        // JOYSTICK BOOST BTN
+        const boostBtn = document.getElementById("joyBoostBtn");
+        boostBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); isBoosting=true; joystick.boostHeld=true; });
+        boostBtn.addEventListener("touchend", (e)=>{ e.preventDefault(); isBoosting=false; joystick.boostHeld=false; });
+
+        // D-PAD
         document.querySelectorAll('.d-btn').forEach(btn => {
             const start = (e) => {
                 if(!gameState.active) return;
@@ -775,19 +664,15 @@
                 }
             };
             const end = (e) => {
-                e.preventDefault();
-                isBoosting = false;
-                keys["ArrowUp"] = false; keys["ArrowDown"] = false; 
-                keys["ArrowLeft"] = false; keys["ArrowRight"] = false;
+                e.preventDefault(); isBoosting = false;
+                keys["ArrowUp"] = false; keys["ArrowDown"] = false; keys["ArrowLeft"] = false; keys["ArrowRight"] = false;
             };
             btn.addEventListener('touchstart', start, {passive: false});
             btn.addEventListener('touchend', end);
             btn.addEventListener('mousedown', start);
             btn.addEventListener('mouseup', end);
-            btn.addEventListener('mouseleave', end);
         });
         
-        // Initial Sync
         applySettings();
     </script>
 </body>
