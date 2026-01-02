@@ -37,7 +37,7 @@
         .game-title { color: var(--accent); margin: 0; text-shadow: 2px 2px 0 #000; font-size: 1.5rem; }
         .icon-btn { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; color: white; display: flex; justify-content: center; align-items: center; }
 
-        /* --- UPDATED HUD --- */
+        /* --- HUD --- */
         .hud-grid { display: flex; justify-content: space-between; gap: 5px; margin-bottom: 8px; }
         .hud-box { 
             background: rgba(0,0,0,0.3); padding: 8px 12px; 
@@ -295,19 +295,26 @@
 
             enemies.forEach(e => {
                 e.x += e.s;
-                if (e.x > 450 || e.x < -100) { 
-                    e.x = e.s > 0 ? -50 : 500; 
-                    e.y = 50 + Math.random()*300; // Randomize Y on respawn
+                
+                // --- FIXED BOUNDARY CHECK (This fixes the Missing Croc) ---
+                if (e.s > 0) { // Moving Right (Pike)
+                    if (e.x > 450) { 
+                        e.x = -50; 
+                        e.y = 50 + Math.random()*300; 
+                    }
+                } else { // Moving Left (Croc)
+                    if (e.x < -100) { 
+                        e.x = 500; 
+                        e.y = 50 + Math.random()*300; 
+                    }
                 }
                 
                 if (Math.hypot(mama.x - e.x, mama.y - e.y) < 30 && e.type === 'croc') { Sfx.play('hit'); loseLife(); }
 
-                // Pre-Rescue Death
                 if (Math.hypot(lostDuckling.x - e.x, lostDuckling.y - e.y) < 25) {
                     Sfx.play('hit'); gameState.casualties++; spawnBaby(); updateUI();
                 }
 
-                // Line Death
                 ducklings.forEach((d, i) => {
                     let idx = (i+1)*15;
                     if (history[idx] && Math.hypot(history[idx].x - e.x, history[idx].y - e.y) < 25) {
@@ -354,7 +361,7 @@
             document.getElementById("savedDisplay").innerText = gameState.saved;
             document.getElementById("targetDisplay").innerText = gameState.target;
             document.getElementById("livesDisplay").innerText = "❤".repeat(gameState.lives);
-            // FIXED WAVE COUNTER UPDATE:
+            // Wave Counter Fix
             document.getElementById("levelDisplay").innerText = gameState.level;
         }
 
