@@ -263,8 +263,6 @@
             
             let speed = 1 + (lvl * 0.15);
             // RANDOMIZED START & STAGGERED APPEARANCE
-            // X is randomized negatively so they don't all appear at same exact second
-            // Y is randomized so they don't always use the same lane
             if (lvl >= 2) enemies.push({ type: 'pike', x: -50 - Math.random()*200, y: 50+Math.random()*300, s: 2 * speed });
             if (lvl >= 3) enemies.push({ type: 'croc', x: 500 + Math.random()*200, y: 50+Math.random()*300, s: -1.2 * speed });
             if (lvl >= 5) enemies.push({ type: 'croc', x: 500 + Math.random()*250, y: 50+Math.random()*300, s: -1.5 * speed });
@@ -356,6 +354,8 @@
             document.getElementById("savedDisplay").innerText = gameState.saved;
             document.getElementById("targetDisplay").innerText = gameState.target;
             document.getElementById("livesDisplay").innerText = "❤".repeat(gameState.lives);
+            // FIXED WAVE COUNTER UPDATE:
+            document.getElementById("levelDisplay").innerText = gameState.level;
         }
 
         function loseLife() {
