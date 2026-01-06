@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Gaming Hub</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+
+    <style>
+        /* --- 1. GLOBAL LAYOUT --- */
+        body { 
+            background: #1a050a; 
+            color: white; 
+            text-align: center; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 80px 20px;
+            overflow-x: hidden;
+        }
+
+        h1 { 
+            color: #ff4d6d; 
+            text-shadow: 0 0 25px rgba(255, 77, 109, 0.6); 
+            font-size: 4rem; 
+            margin-bottom: 30px; 
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- LOGIN PANEL --- */
+        #user-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .login-btn {
+            background: rgba(255, 77, 109, 0.2);
+            border: 2px solid #ff4d6d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover { background: #ff4d6d; box-shadow: 0 0 15px #ff4d6d; }
+
+        /* --- MODAL STYLES (Shared for Login & Game Gate) --- */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 200; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-content {
+            background-color: #2a0a14;
+            margin: 10% auto; 
+            padding: 30px;
+            border: 2px solid #ff4d6d;
+            border-radius: 15px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(255, 77, 109, 0.6);
+            position: relative;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ff4d6d;
+            background: #4a1a24;
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+        
+        .action-btn:hover { transform: scale(1.02); }
+
+        .btn-green { background: #2ecc71; box-shadow: 0 0 10px rgba(46, 204, 113, 0.4); } 
+        .btn-blue { background: #3498db; box-shadow: 0 0 10px rgba(52, 152, 219, 0.4); }  
+        .btn-pink { background: #ff4d6d; box-shadow: 0 0 10px rgba(255, 77, 109, 0.4); }
+
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-btn:hover { color: white; }
+
+        /* --- GAME CARDS & ANIMATIONS --- */
+        .bg-dancer { position: fixed; bottom: 180px; width: 200px; z-index: -1; pointer-events: none; opacity: 0.8; }
+        .giraffe-left { left: 2%; animation: pulse-dance 2s infinite alternate ease-in-out; }
+        .bee-right { right: 2%; animation: pulse-dance-flipped 2s infinite alternate ease-in-out; }
+        .mobile-dancer { display: none; width: 120px; height: auto; margin: 20px auto; border-radius: 15px; pointer-events: none; }
+        
+        @keyframes pulse-dance { 0% { transform: scale(1) translateY(0); } 100% { transform: scale(1.1) translateY(-20px); } }
+        @keyframes pulse-dance-flipped { 0% { transform: scaleX(-1) scale(1) translateY(0); } 100% { transform: scaleX(-1) scale(1.1) translateY(-20px); } }
+
+        .grid { display: flex; justify-content: center; gap: 30px; margin-top: 20px; flex-wrap: wrap; position: relative; z-index: 2; }
+        .card-group { display: flex; flex-direction: column; align-items: center; }
+        .level-tag { font-size: 1.2rem; font-weight: 800; letter-spacing: 3px; margin-bottom: 15px; padding: 5px 20px; border: 2px solid; border-radius: 50px; text-transform: uppercase; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(2px); }
+        .lvl-1 { color: #ff4d6d; border-color: #ff4d6d; box-shadow: 0 0 15px rgba(255, 77, 109, 0.2); }
+        .lvl-2 { color: #2ecc71; border-color: #2ecc71; box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); }
+        .lvl-3 { color: #3498db; border-color: #3498db; box-shadow: 0 0 15px rgba(52, 152, 219, 0.2); }
+
+        .card { border: 3px solid #ff4d6d; padding: 50px 25px; border-radius: 25px; text-decoration: none; color: white; transition: all 0.4s; width: 280px; background: rgba(46, 10, 22, 0.8); display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.3); backdrop-filter: blur(5px); cursor: pointer; }
+        .card span { font-size: 4rem !important; margin-bottom: 20px; }
+        .bunny-card { border-color: #ff4d6d; }
+        .snake-card { border-color: #2ecc71; background: rgba(10, 46, 25, 0.8); }
+        .duck-card { border-color: #3498db; background: rgba(10, 31, 46, 0.8); }
+        .card:hover { transform: translateY(-15px) scale(1.05); color: black; }
+        .bunny-card:hover { background: #ff4d6d; box-shadow: 0 0 40px rgba(255, 77, 109, 0.4); }
+        .snake-card:hover { background: #2ecc71; box-shadow: 0 0 40px rgba(46, 204, 113, 0.4); }
+        .duck-card:hover { background: #3498db; box-shadow: 0 0 40px rgba(52, 152, 219, 0.4); }
+        .card h2 { margin: 10px 0; font-size: 1.8rem; }
+        .card p { font-size: 1rem; opacity: 0.9; line-height: 1.4; }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; margin-bottom: 10px; }
+            .grid { gap: 40px; margin-top: 10px; }
+            .card { width: 85vw; padding: 40px 20px; }
+            .bg-dancer { display: none; }
+            .mobile-dancer { display: block; }
+            #user-panel { top: 10px; right: 10px; }
+            .login-btn { padding: 5px 10px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="user-panel">
+        <span id="user-email" style="margin-right:10px; font-weight:bold; color:#2ecc71;"></span>
+        <button id="auth-btn" class="login-btn" onclick="openLoginModal()">Login / Sign Up</button>
+        <button id="logout-btn" class="login-btn" onclick="handleLogout()" style="display:none;">Logout</button>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+            <h2 style="margin-top:0;">Player Account</h2>
+            <input type="email" id="email" class="modal-input" placeholder="Enter Email">
+            <input type="password" id="password" class="modal-input" placeholder="Enter Password">
+            
+            <button class="action-btn btn-green" onclick="handleLogin()">Login</button>
+            <button class="action-btn btn-blue" onclick="handleSignUp()">Create Account</button>
+            
+            <p id="msg-box" style="font-size:0.8rem; margin-top:10px; color:#ff4d6d;"></p>
+        </div>
+    </div>
+
+    <div id="gameGateModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeGameGate()">&times;</span>
+            <h2 id="gate-title" style="margin-top:0; color:#ff4d6d;">Ready to Play?</h2>
+            
+            <p style="opacity:0.8;">Who is playing today?</p>
+            
+            <input type="text" id="guest-name" class="modal-input" placeholder="Enter Your Name..." style="font-size:1.2rem;">
+            
+            <button class="action-btn btn-pink" onclick="confirmPlay()">START GAME 🚀</button>
+            
+            <p id="gate-msg" style="font-size:0.8rem; margin-top:10px; color:#2ecc71;"></p>
+        </div>
+    </div>
+
+    <img src="Girafffee.gif" class="bg-dancer giraffe-left" alt="Giraffe">
+    <img src="dance.gif" class="bg-dancer bee-right" alt="Flamingo">
+
+    <h1>MY GAMING PORTAL</h1>
+    <img src="Girafffee.gif" class="mobile-dancer" alt="Giraffe Mobile">
+    
+    <div class="grid">
+        <div class="card-group">
+            <div class="level-tag lvl-1">LEVEL 1</div>
+            <div onclick="initiateGame('Bunny Run', 'bunny-run/index.html')" class="card bunny-card">
+                <span>🐰</span>
+                <h2>Carrots</h2>
+                <p>Collect carrots and avoid the cacti!</p>
+            </div>
+        </div>
+        <div class="card-group">
+            <div class="level-tag lvl-2">LEVEL 2</div>
+            <div onclick="initiateGame('Retro Snake', 'snake-game/index.html')" class="card snake-card">
+                <span>🐍</span>
+                <h2>Retro Snake</h2>
+                <p>Eat the apples and grow as long as you can!</p>
+            </div>
+        </div>
+        <div class="card-group">
+            <div class="level-tag lvl-3">LEVEL 3</div>
+            <div onclick="initiateGame('Duck Rescue', 'duck-rescue/index.html')" class="card duck-card">
+                <span>🦢</span>
+                <h2>Duck Rescue</h2>
+                <p>Lead the babies to the nest! Avoid the 🐟!</p>
+            </div>
+        </div>
+    </div>
+
+    <img src="dance.gif" class="mobile-dancer" alt="Flamingo Mobile" style="margin-top: 40px;">
+    <p style="margin-top: 30px; opacity: 0.5; font-size: 0.9rem; position: relative; z-index: 2;">
+        Select a game to begin your adventure.
+    </p>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // CONFIGURATION
+        const supabaseUrl = 'https://xofnyivmeqlatqetnqqi.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvZm55aXZtZXFsYXRxZXRucXFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MDg1OTksImV4cCI6MjA4MzI4NDU5OX0.VYi4BKbEMhBqI5wbPIASpXhMXJu5PIC1ueMxaivcuHE';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Variables to store which game was clicked
+        let selectedGameName = "";
+        let selectedGameUrl = "";
+
+        // --- 1. LOGIN MODAL LOGIC ---
+        const loginModal = document.getElementById("loginModal");
+        const msgBox = document.getElementById("msg-box");
+        function openLoginModal() { loginModal.style.display = "block"; msgBox.innerText = ""; }
+        function closeLoginModal() { loginModal.style.display = "none"; }
+
+        // --- 2. GAME GATE LOGIC (The new popup) ---
+        const gateModal = document.getElementById("gameGateModal");
+        const gateMsg = document.getElementById("gate-msg");
+        const guestInput = document.getElementById("guest-name");
+
+        function closeGameGate() { gateModal.style.display = "none"; }
+
+        // Triggered when clicking a card
+        async function initiateGame(name, url) {
+            selectedGameName = name;
+            selectedGameUrl = url;
+
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (user) {
+                // If logged in, just go! (But show a loading state first)
+                gateModal.style.display = "block";
+                document.getElementById('gate-title').innerText = "Launching " + name + "...";
+                document.getElementById('guest-name').style.display = "none"; // No need to ask name
+                gateMsg.innerText = "Logged in as " + user.email;
+                
+                // Auto-confirm after 1 second so they see the popup
+                setTimeout(() => confirmPlay(), 800);
+            } else {
+                // If NOT logged in, show the Guest Popup
+                gateModal.style.display = "block";
+                document.getElementById('gate-title').innerText = "Play " + name;
+                document.getElementById('guest-name').style.display = "block"; // Show input
+                document.getElementById('guest-name').focus();
+                gateMsg.innerText = "";
+            }
+        }
+
+        // Triggered when clicking "START GAME" in the popup
+        async function confirmPlay() {
+            const guestName = guestInput.value || "Anonymous Guest";
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            // Determine who to record
+            const identifier = user ? user.email : guestName;
+
+            gateMsg.innerText = "Starting Game...";
+
+            // Send to Supabase
+            try {
+                await supabase.from('activity_log').insert([{ 
+                    game_name: selectedGameName, 
+                    user_email: identifier, // Saves Email OR Guest Name
+                    timestamp: new Date()
+                }]);
+            } catch (err) {
+                console.log("Log error:", err);
+            }
+
+            // Go to game
+            window.location.href = selectedGameUrl;
+        }
+
+        // --- 3. AUTH LOGIC ---
+        async function checkUser() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                document.getElementById('auth-btn').style.display = 'none';
+                document.getElementById('logout-btn').style.display = 'inline-block';
+                const name = user.email ? user.email.split('@')[0] : "Player";
+                document.getElementById('user-email').innerText = name; 
+            } else {
+                document.getElementById('auth-btn').style.display = 'inline-block';
+                document.getElementById('logout-btn').style.display = 'none';
+                document.getElementById('user-email').innerText = "";
+            }
+        }
+        checkUser();
+
+        async function handleSignUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            if(!email || !password) { msgBox.innerText = "Please enter email & password"; return; }
+            const { error } = await supabase.auth.signUp({ email, password });
+            if (error) { msgBox.innerText = error.message; } 
+            else { 
+                msgBox.style.color = "#2ecc71"; msgBox.innerText = "Success! Logging in..."; 
+                setTimeout(() => { closeLoginModal(); checkUser(); }, 1000); 
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) { msgBox.style.color = "#ff4d6d"; msgBox.innerText = "Wrong details!"; } 
+            else { 
+                msgBox.style.color = "#2ecc71"; msgBox.innerText = "Welcome!"; 
+                setTimeout(() => { closeLoginModal(); checkUser(); }, 1000); 
+            }
+        }
+
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            window.location.reload();
+        }
+
+        // Close modals if clicking outside
+        window.onclick = function(event) {
+            if (event.target == loginModal) closeLoginModal();
+            if (event.target == gateModal) closeGameGate();
+        }
+    </script>
+</body>
+</html>
