@@ -29,7 +29,7 @@
             z-index: 2;
         }
 
-        /* --- LOGIN BUTTON STYLES --- */
+        /* --- LOGIN PANEL & MODAL --- */
         #user-panel {
             position: absolute;
             top: 20px;
@@ -46,156 +46,94 @@
             cursor: pointer;
             font-weight: bold;
             transition: 0.3s;
-            text-decoration: none;
+        }
+
+        .login-btn:hover { background: #ff4d6d; box-shadow: 0 0 15px #ff4d6d; }
+
+        /* The Modal (background) */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 200; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.8); 
             backdrop-filter: blur(5px);
         }
 
-        .login-btn:hover {
-            background: #ff4d6d;
-            box-shadow: 0 0 15px #ff4d6d;
+        /* Modal Content */
+        .modal-content {
+            background-color: #2a0a14;
+            margin: 10% auto; 
+            padding: 30px;
+            border: 2px solid #ff4d6d;
+            border-radius: 15px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255, 77, 109, 0.5);
         }
 
-        #user-status {
-            font-size: 0.9rem;
-            color: #ff4d6d;
-            margin-right: 10px;
+        .modal-input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            background: #4a1a24;
+            color: white;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
             font-weight: bold;
+            color: white;
         }
 
-        /* --- 2. PC BACKGROUND DANCERS --- */
-        .bg-dancer {
-            position: fixed;
-            bottom: 180px; 
-            width: 200px; 
-            z-index: -1;
-            pointer-events: none;
-            opacity: 0.8;
-        }
+        .btn-green { background: #2ecc71; } /* Login color */
+        .btn-blue { background: #3498db; }  /* Signup color */
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-btn:hover { color: white; }
 
+        /* --- 2. EXISTING STYLES (Dancers, Cards) --- */
+        .bg-dancer { position: fixed; bottom: 180px; width: 200px; z-index: -1; pointer-events: none; opacity: 0.8; }
         .giraffe-left { left: 2%; animation: pulse-dance 2s infinite alternate ease-in-out; }
         .bee-right { right: 2%; animation: pulse-dance-flipped 2s infinite alternate ease-in-out; }
+        .mobile-dancer { display: none; width: 120px; height: auto; margin: 20px auto; border-radius: 15px; pointer-events: none; }
+        @keyframes pulse-dance { 0% { transform: scale(1) translateY(0); } 100% { transform: scale(1.1) translateY(-20px); } }
+        @keyframes pulse-dance-flipped { 0% { transform: scaleX(-1) scale(1) translateY(0); } 100% { transform: scaleX(-1) scale(1.1) translateY(-20px); } }
 
-        /* --- 3. MOBILE DANCERS --- */
-        .mobile-dancer {
-            display: none; 
-            width: 120px;
-            height: auto;
-            margin: 20px auto;
-            border-radius: 15px;
-            pointer-events: none;
-        }
+        .grid { display: flex; justify-content: center; gap: 30px; margin-top: 20px; flex-wrap: wrap; position: relative; z-index: 2; }
+        .card-group { display: flex; flex-direction: column; align-items: center; }
+        .level-tag { font-size: 1.2rem; font-weight: 800; letter-spacing: 3px; margin-bottom: 15px; padding: 5px 20px; border: 2px solid; border-radius: 50px; text-transform: uppercase; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(2px); }
+        .lvl-1 { color: #ff4d6d; border-color: #ff4d6d; box-shadow: 0 0 15px rgba(255, 77, 109, 0.2); }
+        .lvl-2 { color: #2ecc71; border-color: #2ecc71; box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); }
+        .lvl-3 { color: #3498db; border-color: #3498db; box-shadow: 0 0 15px rgba(52, 152, 219, 0.2); }
 
-        @keyframes pulse-dance {
-            0% { transform: scale(1) translateY(0); }
-            100% { transform: scale(1.1) translateY(-20px); }
-        }
-
-        @keyframes pulse-dance-flipped {
-            0% { transform: scaleX(-1) scale(1) translateY(0); }
-            100% { transform: scaleX(-1) scale(1.1) translateY(-20px); }
-        }
-
-        /* --- 4. THE GRID & CARDS --- */
-        .grid { 
-            display: flex; 
-            justify-content: center; 
-            gap: 30px; 
-            margin-top: 20px; 
-            flex-wrap: wrap; 
-            position: relative;
-            z-index: 2;
-        }
-        
-        .card-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* --- NEW: LEVEL TAG STYLES --- */
-        .level-tag {
-            font-size: 1.2rem;
-            font-weight: 800;
-            letter-spacing: 3px;
-            margin-bottom: 15px; /* Separation from card */
-            padding: 5px 20px;
-            border: 2px solid;
-            border-radius: 50px;
-            text-transform: uppercase;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(2px);
-        }
-
-        /* Level 1 Color (Pink) */
-        .lvl-1 {
-            color: #ff4d6d;
-            border-color: #ff4d6d;
-            box-shadow: 0 0 15px rgba(255, 77, 109, 0.2);
-            text-shadow: 0 0 10px rgba(255, 77, 109, 0.5);
-        }
-
-        /* Level 2 Color (Green) */
-        .lvl-2 {
-            color: #2ecc71;
-            border-color: #2ecc71;
-            box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
-            text-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
-        }
-
-        /* Level 3 Color (Blue) */
-        .lvl-3 {
-            color: #3498db;
-            border-color: #3498db;
-            box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
-            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
-        }
-
-        /* --- CARD STYLES --- */
-        .card { 
-            border: 3px solid #ff4d6d; 
-            padding: 50px 25px; 
-            border-radius: 25px; 
-            text-decoration: none; 
-            color: white; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            width: 280px; 
-            background: rgba(46, 10, 22, 0.8);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            backdrop-filter: blur(5px);
-            cursor: pointer; /* Added pointer to show it's clickable */
-        }
-
+        .card { border: 3px solid #ff4d6d; padding: 50px 25px; border-radius: 25px; text-decoration: none; color: white; transition: all 0.4s; width: 280px; background: rgba(46, 10, 22, 0.8); display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.3); backdrop-filter: blur(5px); cursor: pointer; }
         .card span { font-size: 4rem !important; margin-bottom: 20px; }
-        
-        /* Game Specific Colors */
         .bunny-card { border-color: #ff4d6d; }
         .snake-card { border-color: #2ecc71; background: rgba(10, 46, 25, 0.8); }
         .duck-card { border-color: #3498db; background: rgba(10, 31, 46, 0.8); }
-
-        .card:hover { 
-            transform: translateY(-15px) scale(1.05); 
-            color: black; 
-        }
-
+        .card:hover { transform: translateY(-15px) scale(1.05); color: black; }
         .bunny-card:hover { background: #ff4d6d; box-shadow: 0 0 40px rgba(255, 77, 109, 0.4); }
         .snake-card:hover { background: #2ecc71; box-shadow: 0 0 40px rgba(46, 204, 113, 0.4); }
         .duck-card:hover { background: #3498db; box-shadow: 0 0 40px rgba(52, 152, 219, 0.4); }
-        
         .card h2 { margin: 10px 0; font-size: 1.8rem; }
         .card p { font-size: 1rem; opacity: 0.9; line-height: 1.4; }
 
-        /* --- 5. RESPONSIVE LOGIC --- */
         @media (max-width: 600px) {
             h1 { font-size: 2.5rem; margin-bottom: 10px; }
             .grid { gap: 40px; margin-top: 10px; }
             .card { width: 85vw; padding: 40px 20px; }
-            
             .bg-dancer { display: none; }
             .mobile-dancer { display: block; }
-            
             #user-panel { top: 10px; right: 10px; }
             .login-btn { padding: 5px 10px; font-size: 0.8rem; }
         }
@@ -204,16 +142,29 @@
 <body>
 
     <div id="user-panel">
-        <span id="user-status"></span>
-        <button id="login-btn" class="login-btn" onclick="signInWithGithub()">Login with GitHub</button>
-        <button id="logout-btn" class="login-btn" onclick="signOut()" style="display:none;">Logout</button>
+        <span id="user-email" style="margin-right:10px; font-weight:bold; color:#2ecc71;"></span>
+        <button id="auth-btn" class="login-btn" onclick="openModal()">Login / Sign Up</button>
+        <button id="logout-btn" class="login-btn" onclick="handleLogout()" style="display:none;">Logout</button>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 style="margin-top:0;">Player Login</h2>
+            <input type="email" id="email" class="modal-input" placeholder="Enter Email">
+            <input type="password" id="password" class="modal-input" placeholder="Enter Password">
+            
+            <button class="action-btn btn-green" onclick="handleLogin()">Login</button>
+            <button class="action-btn btn-blue" onclick="handleSignUp()">Create New Account</button>
+            
+            <p id="msg-box" style="font-size:0.8rem; margin-top:10px; color:#ff4d6d;"></p>
+        </div>
     </div>
 
     <img src="Girafffee.gif" class="bg-dancer giraffe-left" alt="Giraffe">
     <img src="dance.gif" class="bg-dancer bee-right" alt="Flamingo">
 
     <h1>MY GAMING PORTAL</h1>
-
     <img src="Girafffee.gif" class="mobile-dancer" alt="Giraffe Mobile">
     
     <div class="grid">
@@ -225,7 +176,6 @@
                 <p>Collect carrots and avoid the cacti!</p>
             </div>
         </div>
-
         <div class="card-group">
             <div class="level-tag lvl-2">LEVEL 2</div>
             <div onclick="playGame('Retro Snake', 'snake-game/index.html')" class="card snake-card">
@@ -234,7 +184,6 @@
                 <p>Eat the apples and grow as long as you can!</p>
             </div>
         </div>
-
         <div class="card-group">
             <div class="level-tag lvl-3">LEVEL 3</div>
             <div onclick="playGame('Duck Rescue', 'duck-rescue/index.html')" class="card duck-card">
@@ -246,81 +195,90 @@
     </div>
 
     <img src="dance.gif" class="mobile-dancer" alt="Flamingo Mobile" style="margin-top: 40px;">
-
     <p style="margin-top: 30px; opacity: 0.5; font-size: 0.9rem; position: relative; z-index: 2;">
         Select a game to begin your adventure.
     </p>
 
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // 1. CONFIGURE SUPABASE
-        // I decoded your key to find your unique project URL: xofnyivmeqlatqetnqqi
+        // 1. CONFIGURATION
         const supabaseUrl = 'https://xofnyivmeqlatqetnqqi.supabase.co';
-        
-        // This is the specific key you provided
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvZm55aXZtZXFsYXRxZXRucXFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MDg1OTksImV4cCI6MjA4MzI4NDU5OX0.VYi4BKbEMhBqI5wbPIASpXhMXJu5PIC1ueMxaivcuHE';
-        
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // 2. CHECK LOGIN STATUS ON LOAD
+        // 2. MODAL CONTROLS
+        const modal = document.getElementById("loginModal");
+        const msgBox = document.getElementById("msg-box");
+        function openModal() { modal.style.display = "block"; msgBox.innerText = ""; }
+        function closeModal() { modal.style.display = "none"; }
+        window.onclick = function(event) { if (event.target == modal) closeModal(); }
+
+        // 3. CHECK USER STATUS
         async function checkUser() {
             const { data: { user } } = await supabase.auth.getUser();
-            const loginBtn = document.getElementById('login-btn');
-            const logoutBtn = document.getElementById('logout-btn');
-            const statusSpan = document.getElementById('user-status');
-
             if (user) {
-                // User is logged in
-                loginBtn.style.display = 'none';
-                logoutBtn.style.display = 'inline-block';
-                statusSpan.textContent = "Welcome!"; // Can't show name easily with generic GitHub auth without extra steps, keeping it simple
+                document.getElementById('auth-btn').style.display = 'none';
+                document.getElementById('logout-btn').style.display = 'inline-block';
+                document.getElementById('user-email').innerText = user.email.split('@')[0]; 
             } else {
-                // User is not logged in
-                loginBtn.style.display = 'inline-block';
-                logoutBtn.style.display = 'none';
+                document.getElementById('auth-btn').style.display = 'inline-block';
+                document.getElementById('logout-btn').style.display = 'none';
+                document.getElementById('user-email').innerText = "";
             }
         }
-        
-        // Run check on page load
         checkUser();
 
-        // 3. LOGIN FUNCTION
-        async function signInWithGithub() {
-            const { data, error } = await supabase.auth.signInWithOAuth({
-                provider: 'github',
-            });
+        // 4. SIGN UP LOGIC
+        async function handleSignUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if(!email || !password) { msgBox.innerText = "Please enter email & password"; return; }
+
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            if (error) {
+                msgBox.innerText = error.message;
+            } else {
+                msgBox.style.color = "#2ecc71";
+                msgBox.innerText = "Account created! You are logged in.";
+                setTimeout(() => { closeModal(); checkUser(); }, 1500);
+            }
         }
 
-        // 4. LOGOUT FUNCTION
-        async function signOut() {
-            const { error } = await supabase.auth.signOut();
+        // 5. LOGIN LOGIC
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                msgBox.style.color = "#ff4d6d";
+                msgBox.innerText = "Wrong email or password!";
+            } else {
+                msgBox.style.color = "#2ecc71";
+                msgBox.innerText = "Welcome back!";
+                setTimeout(() => { closeModal(); checkUser(); }, 1000);
+            }
+        }
+
+        // 6. LOGOUT
+        async function handleLogout() {
+            await supabase.auth.signOut();
             window.location.reload();
         }
 
-        // 5. GAME TRACKING FUNCTION
+        // 7. PLAY & TRACK
         async function playGame(gameName, url) {
-            // A. Get current user info (if any)
             const { data: { user } } = await supabase.auth.getUser();
-            const userEmail = user ? user.email : 'Anonymous Guest';
+            const userEmail = user ? user.email : 'Anonymous';
 
-            // B. Send data to Supabase
-            // Note: You must create a table named 'activity_log' in Supabase for this to work!
-            const { error } = await supabase
-                .from('activity_log')
-                .insert([
-                    { 
-                        game_name: gameName, 
-                        user_email: userEmail,
-                        timestamp: new Date()
-                    }
-                ]);
+            // Send log to Supabase
+            await supabase.from('activity_log').insert([{ 
+                game_name: gameName, 
+                user_email: userEmail,
+                timestamp: new Date()
+            }]);
 
-            if (error) {
-                console.log('Tracking Error:', error);
-            }
-
-            // C. Go to the game
             window.location.href = url;
         }
     </script>
